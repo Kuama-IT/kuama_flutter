@@ -1,0 +1,17 @@
+include: package:pedantic/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - lib/generated
+    - lib/l10n
+    - lib/generated_plugin_registrant.dart
+    - lib/**.g.dart
+    - test/**.g.dart
+    - test/**.mocks.dart
+
+# Rules: https://dart-lang.github.io/linter/lints/
+linter:
+  rules:
+    always_use_package_imports: true
+    unnecessary_brace_in_string_interps: false
+    avoid_single_cascade_in_expression_statements: false

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Flutter Platform" pattern="file[*]:pubspec.yaml||file[*]:lib//*||file[*]:test//*||file[*]:integration_test//*||file[*]:assets//*||file[*]:ios//*||file[*]:web//*||file[*]:analysis_options.yaml||file[*]:android//*||file[*]:CHANGELOG.md||file[*]:README.md||file[*]:.env*" />
+</component>
