@@ -40,6 +40,7 @@ class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
     final permissionBloc = this.permissionBloc ?? context.read<TPermissionBloc>();
 
     return BlocConsumer<PermissionBloc, PermissionBlocState>(
+      bloc: permissionBloc,
       listener: (context, state) {
         if (state is! PermissionBlocRequested) return;
         Navigator.of(context).pop(state.status.isGranted);
