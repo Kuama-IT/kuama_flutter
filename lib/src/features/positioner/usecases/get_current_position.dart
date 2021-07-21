@@ -10,7 +10,7 @@ class GetCurrentPosition extends UseCase<NoParams, GeoPoint> {
   final LocatorRepository locatorRepo = GetIt.I();
 
   @override
-  Stream<Either<Failure, GeoPoint>> tryCall(NoParams params) {
+  Future<Either<Failure, GeoPoint>> tryCall(NoParams params) {
     return locatorRepo.currentPosition.toRight();
   }
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/app_pages/use_cases/open_settings_app_page.dart';
 import 'package:kuama_flutter/src/features/positioner/bloc/positioner_bloc.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
 import 'package:kuama_flutter/src/shared/widgets/change_handler.dart';
 import 'package:kuama_flutter/src/shared/widgets/dialogs/app_settings_dialog.dart';
-import 'package:kuama_flutter/src/_utils/lg.dart';
 
 class AskEnablePositionServiceDialog extends StatelessWidget {
   const AskEnablePositionServiceDialog({Key? key}) : super(key: key);
@@ -60,11 +60,11 @@ class OrderEnablePositionServiceDialog extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final result = await GetIt.I<OpenSettingsAppPage>().call(NoParams()).single;
+                  final result = await GetIt.I<OpenSettingsAppPage>().call(NoParams());
                   result.fold((failure) {
-                    lg.warning('Open Settings app page failed!', failure);
+                    lg.e('Open Settings app page failed!', failure);
                   }, (isOpened) {
-                    if (!isOpened) lg.warning('Open Settings app page failed!');
+                    if (!isOpened) lg.e('Open Settings app page failed!');
                   });
                 },
                 child: settingsLabel ?? Text('Open Settings'),

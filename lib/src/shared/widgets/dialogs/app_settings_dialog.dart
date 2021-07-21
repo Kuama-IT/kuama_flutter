@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/app_pages/use_cases/open_settings_app_page.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
-import 'package:kuama_flutter/src/_utils/lg.dart';
 
 class AskOpenAppSettingsPageDialog extends StatelessWidget {
   final Widget? title;
@@ -17,11 +17,11 @@ class AskOpenAppSettingsPageDialog extends StatelessWidget {
   }) : super(key: key);
 
   void openSettingsPage() async {
-    final res = await GetIt.I<OpenSettingsAppPage>().call(NoParams()).single;
+    final res = await GetIt.I<OpenSettingsAppPage>().call(NoParams());
     res.fold((failure) {
-      lg.severe('The app settings page could not be opened', failure);
+      lg.e('The app settings page could not be opened', failure);
     }, (wasOpened) {
-      if (!wasOpened) lg.severe('The app settings page could not be opened');
+      if (!wasOpened) lg.e('The app settings page could not be opened');
     });
   }
 

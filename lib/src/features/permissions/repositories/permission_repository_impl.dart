@@ -1,7 +1,7 @@
+import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/permissions/entities/permission.dart';
 import 'package:kuama_flutter/src/features/permissions/repositories/permission_repository.dart';
 import 'package:kuama_flutter/src/shared/library_exports.dart';
-import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart'
     as ph;
 
@@ -11,20 +11,20 @@ class PermissionRepositoryImpl implements PermissionRepository {
 
   /// [PermissionRepository.check]
   @override
-  Stream<PermissionStatus> check(Permission permission) async* {
+  Future<PermissionStatus> check(Permission permission) async {
     final currentPermission = permission.toPermissionHandler();
     final status = await permissionHandler.checkPermissionStatus(currentPermission);
-    lg.fine('PermissionRepositoryImpl.check | $permission: $status');
-    yield status.toStatus();
+    lg.v('PermissionRepositoryImpl.check | $permission: $status');
+    return status.toStatus();
   }
 
   /// [PermissionRepository.request]
   @override
-  Stream<PermissionStatus> request(Permission permission) async* {
+  Future<PermissionStatus> request(Permission permission) async {
     final currentPermission = permission.toPermissionHandler();
     final status = await permissionHandler.requestPermissions([currentPermission]);
-    lg.fine('PermissionRepositoryImpl.request | $permission: $status');
-    yield status[currentPermission]!.toStatus();
+    lg.v('PermissionRepositoryImpl.request | $permission: $status');
+    return status[currentPermission]!.toStatus();
   }
 }
 

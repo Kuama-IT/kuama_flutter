@@ -5,7 +5,6 @@ analyzer:
     - lib/generated
     - lib/l10n
     - lib/generated_plugin_registrant.dart
-    - lib/**.g.dart
     - test/**.g.dart
     - test/**.mocks.dart
 

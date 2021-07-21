@@ -5,7 +5,7 @@ import 'package:kuama_flutter/src/shared/feature_structure/failure.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
 
 /// Receive the service status of the location
-class OnPositionServiceChanges extends UseCase<NoParams, bool> {
+class OnPositionServiceChanges extends StreamUseCase<NoParams, bool> {
   final LocatorRepository locatorRepo = GetIt.I();
 
   @override

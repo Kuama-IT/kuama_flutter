@@ -1,4 +1,3 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/kuama_flutter.dart';
 import 'package:kuama_flutter/permissions.dart';
@@ -6,6 +5,7 @@ import 'package:kuama_flutter/positioner.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pure_extensions/pure_extensions.dart';
+import 'package:test/test.dart';
 
 import 'positioner_bloc_test.mocks.dart';
 
@@ -66,8 +66,8 @@ void main() {
       bloc.state,
       PositionerBlocIdle(
         lastPosition: null,
-        hasPermission: false,
-        isServiceEnabled: false,
+        hasPermission: permission == EmissionType.alreadyHas,
+        isServiceEnabled: service == EmissionType.alreadyHas,
       ),
     );
   }
@@ -112,6 +112,11 @@ void main() {
           PositionerBlocIdle(
             lastPosition: null,
             hasPermission: true,
+            isServiceEnabled: false,
+          ),
+          PositionerBlocIdle(
+            lastPosition: null,
+            hasPermission: true,
             isServiceEnabled: true,
           ),
         ]),
@@ -121,8 +126,8 @@ void main() {
     test('A listener requests the current position', () async {
       init(permission: EmissionType.alreadyHas, service: EmissionType.alreadyHas);
 
-      when(mockGetCurrent.call(NoParams())).thenAnswer((_) async* {
-        yield Right(GeoPoint(0.0, 0.0));
+      when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
+        return Right(GeoPoint(0.0, 0.0));
       });
 
       bloc.localize();
@@ -143,9 +148,7 @@ void main() {
 
       bloc.deLocalize();
 
-      bloc.close();
-
-      await expectLater(
+      expect(
         bloc.stream,
         emitsInOrder([
           PositionerBlocIdle(
@@ -156,6 +159,8 @@ void main() {
           emitsDone,
         ]),
       );
+
+      await bloc.close();
     });
 
     test('A listener requests the position in realtime', () async {
@@ -211,14 +216,14 @@ void main() {
         ]),
       );
 
-      bloc.close();
-
-      await expectLater(
+      expect(
         bloc.stream,
         emitsInOrder([
           emitsDone,
         ]),
       );
+
+      await bloc.close();
     });
 
     test('More listeners are registered, manage as if it were one', () async {
@@ -269,14 +274,14 @@ void main() {
         ]),
       );
 
-      bloc.close();
-
-      await expectLater(
+      expect(
         bloc.stream,
         emitsInOrder([
           emitsDone,
         ]),
       );
+
+      await bloc.close();
     });
   });
 }

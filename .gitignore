@@ -79,5 +79,4 @@ build/
 !.idea/scopes
 coverage
 .pubspec.lock
-**.g.dart
 test/**/*.mocks.dart

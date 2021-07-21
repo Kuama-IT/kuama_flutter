@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/open_position_service_page.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
-import 'package:kuama_flutter/src/_utils/lg.dart';
 
 Future<void> showPositionServiceDialog({
   required BuildContext context,
@@ -13,12 +13,12 @@ Future<void> showPositionServiceDialog({
 
   switch (theme.platform) {
     case TargetPlatform.android:
-      final res = await GetIt.I<OpenPositionServicePage>().call(NoParams()).single;
+      final res = await GetIt.I<OpenPositionServicePage>().call(NoParams());
       res.fold((failure) {
-        lg.severe('The page to enable the position service could not be opened', failure);
+        lg.e('The page to enable the position service could not be opened', failure);
       }, (wasOpened) {
         // TODO: open a dialog
-        if (!wasOpened) lg.severe('The page to enable the position service could not be opened');
+        if (!wasOpened) lg.e('The page to enable the position service could not be opened');
       });
       break;
     case TargetPlatform.fuchsia:

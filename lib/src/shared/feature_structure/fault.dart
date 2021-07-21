@@ -1,7 +1,7 @@
-import 'package:kuama_flutter/src/shared/utils/pretty_formatter.dart';
+import 'package:kuama_flutter/src/shared/utils/debuggable.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class Fault with PrettyObject {
+abstract class Fault with Debuggable {
   final ErrorAndStackTrace? error;
 
   Fault({this.error});
@@ -10,21 +10,27 @@ abstract class Fault with PrettyObject {
   String get message;
 
   @override
-  Map<String, dynamic> toPrettyMap() {
+  Map<String, dynamic> collectDebugInfo() {
+    final e = error?.error;
+    final st = error?.stackTrace;
+
     return {
-      if (error != null) 'Error(${error.runtimeType})': '${error!.error}\n${error!.stackTrace}',
-      'Fault(${runtimeType})': '${message}',
+      ...collectLogMessages(),
+      if (e != null) ...(e is Debuggable ? e.collectDebugInfo() : {'Error': e}),
+      if (st != null) 'ErrorStackTrace': st,
     };
   }
 
+  Map<String, dynamic> collectLogMessages() => {'Failure(${runtimeType})': message};
+
   @override
   String toString() {
-    final buffer = StringBuffer();
-    if (error != null) {
-      buffer.write(error!.error);
-      if (error!.stackTrace != null) buffer.write(error!.stackTrace);
-    }
-    buffer.write('Fault($runtimeType): $message');
+    final e = error?.error;
+    final st = error?.stackTrace;
+
+    final buffer = StringBuffer('Failure($runtimeType): $message');
+    if (e != null) buffer.write(e);
+    if (st != null) buffer.write(st);
     return buffer.toString();
   }
 }

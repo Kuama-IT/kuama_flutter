@@ -1,8 +1,10 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/fault.dart';
-import 'package:kuama_flutter/src/shared/utils/pretty_formatter.dart';
+import 'package:kuama_flutter/src/shared/utils/debuggable.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class Failure with PrettyObject {
+abstract class Failure with Debuggable {
   final StackTrace stackTrace = StackTrace.current;
   final ErrorAndStackTrace? error;
 
@@ -17,24 +19,28 @@ abstract class Failure with PrettyObject {
   String get onMessage;
 
   @override
-  Map<String, dynamic> toPrettyMap() {
-    final err = error;
+  Map<String, dynamic> collectDebugInfo() {
+    final e = error?.error;
+    final st = error?.stackTrace;
 
     return {
-      if (err != null)
-        ...(err is PrettyObject ? toPrettyMap() : {'Error(${error.runtimeType})': '$error'}),
-      'Failure(${runtimeType})': '${message}\n${stackTrace}',
+      ...toLogMessages(),
+      if (e != null) ...(e is Debuggable ? e.collectDebugInfo() : {'Fault': e}),
+      if (st != null) 'FaultStackTrace': st,
+      'FailureStackTrace': stackTrace,
     };
   }
 
+  Map<String, dynamic> toLogMessages() => {'Failure(${runtimeType})': onMessage};
+
   @override
   String toString() {
-    final buffer = StringBuffer();
-    if (error != null) {
-      buffer.write(error!.error);
-      if (error!.stackTrace != null) buffer.write(error!.stackTrace);
-    }
-    buffer.write('Fault($runtimeType): $message');
+    final e = error?.error;
+    final st = error?.stackTrace;
+
+    final buffer = StringBuffer('Failure($runtimeType): $onMessage');
+    if (e != null) buffer.write(e);
+    if (st != null) buffer.write(st);
     buffer.write(stackTrace);
     return buffer.toString();
   }
@@ -50,17 +56,40 @@ class UnhandledFailure extends Failure {
 
 /// Extend or use this class for all errors/exceptions given by classes that use an HttpClient
 class HttpClientFailure extends Failure {
-  HttpClientFailure({ErrorAndStackTrace? error}) : super(error: error);
+  final DioError dioError;
+
+  HttpClientFailure({
+    required DioError error,
+    required StackTrace stackTrace,
+  })  : dioError = error,
+        super(error: ErrorAndStackTrace(error, stackTrace));
 
   @override
-  String get onMessage => 'Http client error';
+  String get onMessage => 'Http client error (${dioError.response?.statusCode})';
+
+  @override
+  Map<String, dynamic> toLogMessages() {
+    final request = dioError.requestOptions;
+    final response = dioError.response;
+    return {
+      '$runtimeType(${dioError.runtimeType})': dioError.toString(),
+      'Request(${request.runtimeType}): ${request.uri}': request.data,
+      if (response != null) 'Response(${response.runtimeType}): ${response.statusCode}': response,
+    };
+  }
 }
 
 /// Extend or use this class for all errors/exceptions given by classes that use a current platform
 /// (MethodChannel/EventChannel)
 class PlatformFailure extends Failure {
-  PlatformFailure({ErrorAndStackTrace? error}) : super(error: error);
+  final PlatformException platformError;
+
+  PlatformFailure({
+    required PlatformException error,
+    required StackTrace stackTrace,
+  })  : platformError = error,
+        super(error: ErrorAndStackTrace(error, stackTrace));
 
   @override
-  String get onMessage => 'Platform error';
+  String get onMessage => platformError.message ?? 'Platform error';
 }
