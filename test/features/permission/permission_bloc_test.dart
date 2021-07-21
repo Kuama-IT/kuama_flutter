@@ -38,9 +38,9 @@ void main() {
   group('Test PermissionBloc', () {
     group('Load', () {
       test('Load->ConfirmNegated', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          yield Right(false);
+          return Right(false);
         });
 
         bloc.load();
@@ -60,12 +60,12 @@ void main() {
       });
 
       test('Load->PermissionPermanentlyDenied', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          yield Right(true);
+          return Right(true);
         });
-        when(mockCheck.call(any)).thenAnswer((_) async* {
-          yield Right(PermissionStatus.permanentlyDenied);
+        when(mockCheck.call(any)).thenAnswer((_) async {
+          return Right(PermissionStatus.permanentlyDenied);
         });
 
         bloc.load();
@@ -85,12 +85,12 @@ void main() {
       });
 
       test('Load->PermissionDenied', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          yield Right(true);
+          return Right(true);
         });
-        when(mockCheck.call(any)).thenAnswer((_) async* {
-          yield Right(PermissionStatus.denied);
+        when(mockCheck.call(any)).thenAnswer((_) async {
+          return Right(PermissionStatus.denied);
         });
 
         bloc.load();
@@ -109,12 +109,12 @@ void main() {
       });
 
       test('Load->PermissionGranted', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          yield Right(true);
+          return Right(true);
         });
-        when(mockCheck.call(any)).thenAnswer((_) async* {
-          yield Right(PermissionStatus.granted);
+        when(mockCheck.call(any)).thenAnswer((_) async {
+          return Right(PermissionStatus.granted);
         });
 
         bloc.load();
@@ -136,9 +136,9 @@ void main() {
 
     group('Request', () {
       test('Request->RequireNegated->PermissionDenied', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          yield Right(false);
+          return Right(false);
         });
 
         bloc.request();
@@ -158,11 +158,11 @@ void main() {
       });
 
       test('Request->RequireGranted->PermissionDenied', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
-          yield Right(true);
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
+          return Right(true);
         });
-        when(mockCheck.call(any)).thenAnswer((_) async* {
-          yield Right(PermissionStatus.denied);
+        when(mockCheck.call(any)).thenAnswer((_) async {
+          return Right(PermissionStatus.denied);
         });
 
         bloc.request();
@@ -181,11 +181,11 @@ void main() {
       });
 
       test('Request->RequireGranted->PermissionGranted', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
-          yield Right(true);
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
+          return Right(true);
         });
-        when(mockCheck.call(any)).thenAnswer((_) async* {
-          yield Right(PermissionStatus.granted);
+        when(mockCheck.call(any)).thenAnswer((_) async {
+          return Right(PermissionStatus.granted);
         });
 
         bloc.request();
@@ -211,11 +211,11 @@ void main() {
           permission: Permission.contacts,
         ));
 
-        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async* {
-          yield Right(false);
+        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async {
+          return Right(false);
         });
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
-          yield Right(false);
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
+          return Right(false);
         });
 
         bloc.confirmRequest(false);
@@ -239,14 +239,14 @@ void main() {
           permission: Permission.contacts,
         ));
 
-        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async* {
-          yield Right(true);
+        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async {
+          return Right(true);
         });
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
-          yield Right(true);
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
+          return Right(true);
         });
-        when(mockRequest.call(any)).thenAnswer((_) async* {
-          yield Right(PermissionStatus.denied);
+        when(mockRequest.call(any)).thenAnswer((_) async {
+          return Right(PermissionStatus.denied);
         });
 
         bloc.confirmRequest(true);
@@ -270,14 +270,14 @@ void main() {
           permission: Permission.contacts,
         ));
 
-        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async* {
-          yield Right(true);
+        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async {
+          return Right(true);
         });
-        when(mockCanAsk.call(any)).thenAnswer((_) async* {
-          yield Right(true);
+        when(mockCanAsk.call(any)).thenAnswer((_) async {
+          return Right(true);
         });
-        when(mockRequest.call(any)).thenAnswer((_) async* {
-          yield Right(PermissionStatus.granted);
+        when(mockRequest.call(any)).thenAnswer((_) async {
+          return Right(PermissionStatus.granted);
         });
 
         bloc.confirmRequest(true);

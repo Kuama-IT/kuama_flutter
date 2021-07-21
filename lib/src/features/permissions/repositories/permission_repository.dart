@@ -5,8 +5,8 @@ abstract class PermissionRepository {
 
   /// Check the status of the permission
   /// See [PermissionStatus] for more information
-  Stream<PermissionStatus> check(Permission permission);
+  Future<PermissionStatus> check(Permission permission);
 
   /// Requires permission
-  Stream<PermissionStatus> request(Permission permission);
+  Future<PermissionStatus> request(Permission permission);
 }

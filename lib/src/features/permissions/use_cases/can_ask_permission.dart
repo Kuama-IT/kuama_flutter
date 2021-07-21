@@ -17,7 +17,7 @@ class _PreferencesCanAskPermission extends CanAskPermission {
   final PermissionPreferencesRepository prefRepo = GetIt.I();
 
   @override
-  Stream<Either<Failure, bool>> tryCall(Permission permission) async* {
-    yield* prefRepo.getCanAsk(permission).toRight();
+  Future<Either<Failure, bool>> tryCall(Permission permission) async {
+    return prefRepo.getCanAsk(permission).toRight();
   }
 }

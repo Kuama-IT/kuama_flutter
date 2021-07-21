@@ -145,7 +145,7 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
     if (_realTimeListenerCount <= 0) {
       yield state.toLocating(isRealTime: false);
 
-      final res = await _getCurrentLocation.call(NoParams()).single;
+      final res = await _getCurrentLocation.call(NoParams());
       yield res.fold((failure) {
         return state.toFailed(failure: failure);
       }, (position) {

@@ -1,12 +1,12 @@
-import 'package:test/test.dart';
 import 'package:kuama_flutter/kuama_flutter.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('Test Fault', () {
     test('Test prettyMap() method work', () {
       final fault = HttpClientFault();
 
-      expect(fault.toPrettyMap(), isNotEmpty);
+      expect(fault.collectLogMessages(), isNotEmpty);
     });
 
     test('Test toString() method work', () {
@@ -18,7 +18,7 @@ void main() {
     test('Test prettyMap() method work with generic error', () {
       final fault = HttpClientFault(error: ErrorAndStackTrace('Error', StackTrace.current));
 
-      expect(fault.toPrettyMap(), isNotEmpty);
+      expect(fault.collectLogMessages(), isNotEmpty);
     });
 
     test('Test toString() method work with generic error', () {
