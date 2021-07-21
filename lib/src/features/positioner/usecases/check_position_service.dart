@@ -4,12 +4,12 @@ import 'package:kuama_flutter/src/features/positioner/repositories/locator_repos
 import 'package:kuama_flutter/src/shared/feature_structure/failure.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
 
-/// Open the position service page to enable it
-class OpenPositionServicePage extends UseCase<NoParams, bool> {
+/// Check if the position service is enabled
+class CheckPositionService extends UseCase<NoParams, bool> {
   final LocatorRepository locatorRepo = GetIt.I();
 
   @override
   Future<Either<Failure, bool>> tryCall(NoParams params) {
-    return locatorRepo.openServicePage().toRight();
+    return locatorRepo.checkService().toRight();
   }
 }

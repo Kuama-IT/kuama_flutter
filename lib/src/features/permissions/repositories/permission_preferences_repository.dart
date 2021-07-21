@@ -4,7 +4,7 @@ import 'package:kuama_flutter/src/features/permissions/entities/permission.dart'
 abstract class PermissionPreferencesRepository {
   const PermissionPreferencesRepository._();
 
-  Stream<bool> getCanAsk(Permission permission);
+  Future<bool> getCanAsk(Permission permission);
 
-  Stream<bool> setCanAsk(Permission permission, bool canAsk);
+  Future<bool> setCanAsk(Permission permission, bool canAsk);
 }

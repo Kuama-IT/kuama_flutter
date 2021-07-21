@@ -2,10 +2,12 @@ import 'dart:convert';
 
 class PrettyFormatter {
   static const bottomRight = '╔';
-  static const vertical = '║';
+  static const dVertical = '║';
   static const verticalLeft = '╠';
   static const topRight = '╚';
   static const horizontal = '═';
+
+  static const vertical = '|';
 
   final width = 100;
 
@@ -37,7 +39,7 @@ class PrettyFormatter {
       } else {
         sheet.add(_prettyEdge(verticalLeft, name));
       }
-      sheet.addAll(_prettySplit(data));
+      sheet.addAll(_prettySplit(name.startsWith('@') ? vertical : dVertical, data));
     }
     sheet.add(_prettyEdge(topRight));
 
@@ -54,8 +56,8 @@ class PrettyFormatter {
     return '${prefix}${horizontal * 5}${name}${horizontal * missingWidth}';
   }
 
-  Iterable<String> _prettySplit(Object? data) {
-    return _split(data).map((line) => '$vertical $line');
+  Iterable<String> _prettySplit(String prefix, Object? data) {
+    return _split(data).map((line) => '$prefix $line');
   }
 
   Iterable<String> _split(Object? data) {
@@ -72,28 +74,5 @@ class PrettyFormatter {
     final lines = _mapEncoder.convert(map).split('\n');
     if (lines.length <= 2) return const <String>[];
     return lines.sublist(1, lines.length - 1);
-  }
-}
-
-abstract class PrettyObject {
-  factory PrettyObject(Map<String, dynamic> map, [Object? error, StackTrace? stackTrace]) =
-      _PrettyObject;
-
-  Map<String, dynamic> toPrettyMap() => {'$runtimeType': toString()};
-}
-
-class _PrettyObject with PrettyObject {
-  final Map<String, dynamic> map;
-  final Object? error;
-  final StackTrace? stackTrace;
-
-  _PrettyObject(this.map, [this.error, this.stackTrace]);
-
-  @override
-  Map<String, dynamic> toPrettyMap() {
-    return {
-      ...map,
-      if (error != null) 'Error: ${error.runtimeType}': '$error\n$stackTrace',
-    };
   }
 }

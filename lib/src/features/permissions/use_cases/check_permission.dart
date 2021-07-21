@@ -11,7 +11,7 @@ class CheckPermission extends UseCase<Permission, PermissionStatus> {
   final PermissionRepository permissionsRepo = GetIt.I();
 
   @override
-  Stream<Either<Failure, PermissionStatus>> tryCall(Permission permission) async* {
-    yield* permissionsRepo.check(permission).toRight();
+  Future<Either<Failure, PermissionStatus>> tryCall(Permission permission) async {
+    return permissionsRepo.check(permission).toRight();
   }
 }

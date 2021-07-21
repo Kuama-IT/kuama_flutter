@@ -2,13 +2,13 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/permissions/entities/permission.dart';
 import 'package:kuama_flutter/src/features/permissions/use_cases/can_ask_permission.dart';
 import 'package:kuama_flutter/src/features/permissions/use_cases/check_permission.dart';
 import 'package:kuama_flutter/src/features/permissions/use_cases/request_permission.dart';
 import 'package:kuama_flutter/src/features/permissions/use_cases/update_can_ask_permission.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/failure.dart';
-import 'package:kuama_flutter/src/_utils/lg.dart';
 
 part '_permission_event.dart';
 part '_permission_state.dart';
@@ -113,13 +113,12 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
   /// NB: If it fails or succeeds with a wrong outcome, the bloc is not affected by the malfunction
   /// TODO: It continues with the correct functioning even in case of success with wrong response
   Future<void> _callUpdateCanAsk(bool canAsk) async {
-    final res =
-        await _updateCanAsk.call(UpdateCanAskPermissionParams(state.permission, canAsk)).single;
+    final res = await _updateCanAsk.call(UpdateCanAskPermissionParams(state.permission, canAsk));
     res.fold((failure) {
       // Todo: Show failure
-      lg.warning(failure);
+      lg.e(failure);
     }, (canAsk) {
-      lg.finest('Update can ask permission: $canAsk');
+      lg.i('Update can ask permission: $canAsk');
     });
   }
 
@@ -133,7 +132,7 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
   /// In other cases, [PermissionBlocRequested] will be issued with the status of the permit
   /// or [PermissionBlocRequestFailed] if the request for the permit fails
   Stream<PermissionBlocState> _mapRequest(_RequestType type) async* {
-    final canRequireRes = await _canAsk.call(state.permission).single;
+    final canRequireRes = await _canAsk.call(state.permission);
 
     yield await canRequireRes.fold((failure) {
       return state.toRequestFailed(failure: failure);
@@ -142,7 +141,7 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
         return state.toRequested(status: PermissionStatus.denied);
       }
 
-      final statusRes = await (type.isRequest ? _request : _check).call(state.permission).single;
+      final statusRes = await (type.isRequest ? _request : _check).call(state.permission);
 
       return statusRes.fold((failure) {
         return state.toRequestFailed(failure: failure);

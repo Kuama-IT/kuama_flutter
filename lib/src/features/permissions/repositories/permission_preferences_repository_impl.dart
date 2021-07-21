@@ -13,14 +13,14 @@ class PermissionPreferencesRepositoryImpl implements PermissionPreferencesReposi
 
   /// [PermissionPreferencesRepository.getCanAsk]
   @override
-  Stream<bool> getCanAsk(Permission permission) async* {
-    yield pref.getBool(getCanAskKey(permission)) ?? true;
+  Future<bool> getCanAsk(Permission permission) async {
+    return pref.getBool(getCanAskKey(permission)) ?? true;
   }
 
   /// [PermissionPreferencesRepository.setCanAsk]
   @override
-  Stream<bool> setCanAsk(Permission permission, bool canAsk) async* {
+  Future<bool> setCanAsk(Permission permission, bool canAsk) async {
     await pref.setBool(getCanAskKey(permission), canAsk);
-    yield* getCanAsk(permission);
+    return getCanAsk(permission);
   }
 }

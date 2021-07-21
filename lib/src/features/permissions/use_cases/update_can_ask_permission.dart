@@ -24,7 +24,7 @@ class _PreferencesUpdateCanAskPermission extends UpdateCanAskPermission {
   final PermissionPreferencesRepository prefRepo = GetIt.I();
 
   @override
-  Stream<Either<Failure, bool>> tryCall(UpdateCanAskPermissionParams params) async* {
-    yield* prefRepo.setCanAsk(params.permission, params.canAsk).toRight();
+  Future<Either<Failure, bool>> tryCall(UpdateCanAskPermissionParams params) async {
+    return prefRepo.setCanAsk(params.permission, params.canAsk).toRight();
   }
 }

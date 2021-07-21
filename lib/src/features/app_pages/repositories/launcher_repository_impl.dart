@@ -6,7 +6,7 @@ class AppPagesRepositoryImpl implements AppPagesRepository {
   final PermissionHandlerPlatform permissionHandler = GetIt.I();
 
   @override
-  Stream<bool> openSettings() async* {
-    yield await permissionHandler.openAppSettings();
+  Future<bool> openSettings() async {
+    return await permissionHandler.openAppSettings();
   }
 }
