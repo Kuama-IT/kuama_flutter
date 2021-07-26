@@ -27,7 +27,7 @@ class LogDioInterceptor with Interceptor {
   }
 
   void _logError(Map<String, dynamic> msg) {
-    logger.e(Debuggable(msg));
+    logger.w(Debuggable(msg));
   }
 
   @override

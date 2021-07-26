@@ -1,7 +1,5 @@
 import 'dart:async';
 
-final lg = Logger('Toonie');
-
 enum LogLevel { tmp, verbose, debug, info, warn, error, errorFlutter, errorDart, wtf, nothing }
 
 extension LogLevelName on LogLevel {

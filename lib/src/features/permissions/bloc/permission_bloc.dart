@@ -180,9 +180,17 @@ class PositionPermissionBloc extends PermissionBloc {
           permission: Permission.position,
           isConfirmRequired: isConfirmRequired,
         );
+
+  PositionPermissionBloc._({
+    bool isConfirmRequired = true,
+    required Permission permission,
+  }) : super._(
+          permission: permission,
+          isConfirmRequired: isConfirmRequired,
+        );
 }
 
-class BackgroundPositionPermissionBloc extends PermissionBloc {
+class BackgroundPositionPermissionBloc extends PositionPermissionBloc {
   BackgroundPositionPermissionBloc({
     bool isConfirmRequired = true,
   }) : super._(

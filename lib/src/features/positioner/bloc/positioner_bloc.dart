@@ -20,6 +20,8 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
   final GetCurrentPosition _getCurrentLocation = GetIt.I();
   final OnPositionChanges _onPositionChanges = GetIt.I();
 
+  final PositionPermissionBloc permissionBloc;
+
   final _subs = CompositeSubscription();
 
   var _realTimeListenerCount = 0;
@@ -27,7 +29,7 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
 
   PositionerBloc({
     GeoPoint? lastPosition,
-    required PermissionBloc permissionBloc,
+    required this.permissionBloc,
     bool isServiceEnabled = false,
   }) : super(PositionerBlocIdle(
           lastPosition: lastPosition,
