@@ -6,29 +6,61 @@ import 'package:permission_handler_platform_interface/permission_handler_platfor
     as ph;
 
 /// [PermissionRepository]
+///
+/// 1.The `locationAlways` permission can not be requested directly, the user has to request the `locationWhenInUse` permission first.
+///   Accepting this permission by clicking on the 'Allow While Using App' gives the user the possibility to request the `locationAlways` permission.
+///   This will then bring up another permission popup asking you to `Keep Only While Using` or to `Change To Always Allow`.
 class PermissionRepositoryImpl implements PermissionRepository {
   final ph.PermissionHandlerPlatform permissionHandler = GetIt.I();
 
   /// [PermissionRepository.check]
   @override
   Future<PermissionStatus> check(Permission permission) async {
-    final currentPermission = permission.toPermissionHandler();
-    final status = await permissionHandler.checkPermissionStatus(currentPermission);
-    lg.v('PermissionRepositoryImpl.check | $permission: $status');
-    return status.toStatus();
+    final pluginPermission = permission.toPermissionHandler();
+    final pluginStatus = await permissionHandler.checkPermissionStatus(pluginPermission);
+    final status = pluginStatus.toStatus();
+    lg.v(
+        'PermissionRepositoryImpl.check | $permission -> $pluginPermission | $pluginStatus -> $status');
+    return status;
   }
 
   /// [PermissionRepository.request]
   @override
   Future<PermissionStatus> request(Permission permission) async {
-    final currentPermission = permission.toPermissionHandler();
-    final status = await permissionHandler.requestPermissions([currentPermission]);
-    lg.v('PermissionRepositoryImpl.request | $permission: $status');
-    return status[currentPermission]!.toStatus();
+    final pluginPermission = permission.toPermissionHandler();
+    final pluginStatus = await _request(pluginPermission);
+    final status = pluginStatus.toStatus();
+    lg.v(
+        'PermissionRepositoryImpl.request | $permission -> $pluginPermission | $pluginStatus -> $status');
+    return status;
+  }
+
+  Future<ph.PermissionStatus> _request(ph.Permission permission) async {
+    // See point (1)
+    if (permission == ph.Permission.locationAlways) {
+      final status = await permissionHandler.checkPermissionStatus(ph.Permission.locationWhenInUse);
+
+      if (!status.isGranted) {
+        final mapStatus = await permissionHandler.requestPermissions([
+          ph.Permission.locationWhenInUse,
+        ]);
+
+        final status = mapStatus[ph.Permission.locationWhenInUse]!;
+
+        if (!status.isGranted) return status;
+      }
+
+      final mapStatus = await permissionHandler.requestPermissions([ph.Permission.locationAlways]);
+      return mapStatus[ph.Permission.locationAlways]!;
+    }
+    final mapStatus = await permissionHandler.requestPermissions([permission]);
+    return mapStatus[permission]!;
   }
 }
 
 extension PermissionToPermissionHandler on Permission {
+  bool get isBackgroundPosition => this == Permission.backgroundPosition;
+
   ph.Permission toPermissionHandler() {
     switch (this) {
       case Permission.contacts:
@@ -47,7 +79,6 @@ extension PermissionStatusHandlerToPermissionStatus on ph.PermissionStatus {
       case ph.PermissionStatus.permanentlyDenied:
         return PermissionStatus.permanentlyDenied;
       case ph.PermissionStatus.denied:
-        return PermissionStatus.denied;
       case ph.PermissionStatus.limited:
       case ph.PermissionStatus.restricted:
         return PermissionStatus.denied;

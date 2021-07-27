@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/permissions/bloc/permission_bloc.dart';
+import 'package:kuama_flutter/src/features/positioner/usecases/check_position_service.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/get_current_position.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/on_position_changes.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/on_service_changes.dart';
@@ -16,9 +18,12 @@ part '_positioner_event.dart';
 part '_positioner_state.dart';
 
 class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
+  final CheckPositionService _checkService = GetIt.I();
   final OnPositionServiceChanges _onServiceChanges = GetIt.I();
   final GetCurrentPosition _getCurrentLocation = GetIt.I();
   final OnPositionChanges _onPositionChanges = GetIt.I();
+
+  final PositionPermissionBloc permissionBloc;
 
   final _subs = CompositeSubscription();
 
@@ -27,27 +32,18 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
 
   PositionerBloc({
     GeoPoint? lastPosition,
-    required PermissionBloc permissionBloc,
-    bool isServiceEnabled = false,
+    required this.permissionBloc,
   }) : super(PositionerBlocIdle(
           lastPosition: lastPosition,
           hasPermission: permissionBloc.state.isGranted,
-          isServiceEnabled: isServiceEnabled,
+          isServiceEnabled: false,
         )) {
-    permissionBloc.stream.distinctRuntimeType().where((state) {
-      // Skip all elaborating request states
-      return !(state is PermissionBlocRequesting || state is PermissionBlocRequestConfirm);
-    }).listen((permissionState) {
+    permissionBloc.stream.listen((permissionState) {
       add(_PermissionUpdatePositionerBloc(permissionState));
     }).addTo(_subs);
-
-    _onServiceChanges.call(NoParams()).listen((res) {
-      res.fold((failure) {
-        // Todo: emit failure
-      }, (isServiceEnabled) {
-        add(_ServiceUpdatePositionerBloc(isServiceEnabled));
-      });
-    }).addTo(_subs);
+    if (permissionBloc.state.isGranted) {
+      _serviceSub = listenServicesStatus();
+    }
   }
 
   /// Call it for localize a user. Remember to call [deLocalize] to free up resources
@@ -94,20 +90,45 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
     await _onPositionChangesSub?.cancel();
   }
 
+  StreamSubscription? _serviceSub;
+
+  StreamSubscription listenServicesStatus() {
+    return Rx.concatEager([
+      _checkService.call(NoParams()).asStream(),
+      _onServiceChanges.call(NoParams()),
+    ]).listen((res) {
+      res.fold((failure) {
+        // Todo: emit failure
+        lg.e('Error on PositionerBloc $failure');
+      }, (isServiceEnabled) {
+        add(_ServiceUpdatePositionerBloc(isServiceEnabled));
+      });
+    });
+  }
+
   /// Update current status based on permission state
   Stream<PositionerBlocState> _mapPermissionUpdate(PermissionBlocState permissionState) async* {
+    // Skip all elaborating request states
+    if (permissionState is PermissionBlocRequesting ||
+        permissionState is PermissionBlocRequestConfirm) {
+      return;
+    }
+
     final state = this.state;
 
     final hasPermission = permissionState.isGranted;
 
     // Permission has been revoked, clean up and update the bloc state
     if (!hasPermission) {
+      await _serviceSub?.cancel();
       await _restoreBloc();
       yield state.toIdle(hasPermission: false);
       return;
     }
     // Permission has been granted, update the bloc state
     if (!state.hasPermission) {
+      // listen service status only after app gets the position permission
+      _serviceSub ??= listenServicesStatus();
       yield state.toIdle(hasPermission: true);
       return;
     }
@@ -162,7 +183,10 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
     yield state.toLocating(isRealTime: true);
 
     // Listen realtime position
-    _onPositionChangesSub = _onPositionChanges.call(NoParams()).listen((res) {
+    _onPositionChangesSub = Rx.concatEager([
+      _getCurrentLocation.call(NoParams()).asStream(),
+      _onPositionChanges.call(NoParams()),
+    ]).listen((res) {
       final nextState = res.fold((failure) {
         return state.toFailed(failure: failure);
       }, (position) {

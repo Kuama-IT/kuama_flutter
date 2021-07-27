@@ -42,7 +42,9 @@ class _OrderPermissionAndServicePermissionBlocListenerState
       await _handleDialog(
         context,
         state,
-        (context) => OrderAllowPermissionDialog<PositionPermissionBloc>(),
+        (context) => OrderAllowPermissionDialog<PermissionBloc>(
+          permissionBloc: context.read<PositionerBloc>().permissionBloc,
+        ),
       );
       return;
     }
