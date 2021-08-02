@@ -198,7 +198,8 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
 
   /// Stop listening to the actual location if there are no more listeners for it
   Stream<PositionerBlocState> _mapDeLocalize(DeLocalizePositionerBloc event) async* {
-    if (event.wasUsingRealTime) {
+    // Reduce the counter of listeners only if it has at least one
+    if (event.wasUsingRealTime && _realTimeListenerCount > 0) {
       _realTimeListenerCount--;
     }
     // Other listeners are listening to the position in realtime
