@@ -1,13 +1,13 @@
-part of 'positioner_bloc.dart';
+part of 'position_bloc.dart';
 
-abstract class PositionerBlocState extends Equatable {
+abstract class PositionBlocState extends Equatable {
   final GeoPoint? lastPosition;
 
-  const PositionerBlocState({required this.lastPosition});
+  const PositionBlocState({required this.lastPosition});
 
   bool get hasPermission {
     final state = this;
-    if (state is PositionerBlocIdle) {
+    if (state is PositionBlocIdle) {
       return state.hasPermission;
     }
     return true;
@@ -15,40 +15,40 @@ abstract class PositionerBlocState extends Equatable {
 
   bool get isServiceEnabled {
     final state = this;
-    if (state is PositionerBlocIdle) {
+    if (state is PositionBlocIdle) {
       return state.isServiceEnabled;
     }
     return true;
   }
 
-  /// Check if you can call [PositionerBloc.localize].
+  /// Check if you can call [PositionBloc.localize].
   /// You must have permission and active service
   bool get canLocalize => hasPermission && isServiceEnabled;
 
-  PositionerBlocState toIdle({GeoPoint? position, bool? hasPermission, bool? isServiceEnabled}) {
-    return PositionerBlocIdle(
+  PositionBlocState toIdle({GeoPoint? position, bool? hasPermission, bool? isServiceEnabled}) {
+    return PositionBlocIdle(
       lastPosition: position ?? lastPosition,
       hasPermission: hasPermission ?? this.hasPermission,
       isServiceEnabled: isServiceEnabled ?? this.isServiceEnabled,
     );
   }
 
-  PositionerBlocLocating toLocating({required bool isRealTime}) {
-    return PositionerBlocLocating(
+  PositionBlocLocating toLocating({required bool isRealTime}) {
+    return PositionBlocLocating(
       lastPosition: lastPosition,
       isRealTime: isRealTime,
     );
   }
 
-  PositionerBlocState toFailed({required Failure failure}) {
-    return PositionerBlocFailed(lastPosition: lastPosition, failure: failure);
+  PositionBlocState toFailed({required Failure failure}) {
+    return PositionBlocFailed(lastPosition: lastPosition, failure: failure);
   }
 
-  PositionerBlocState toLocated({
+  PositionBlocState toLocated({
     required bool isRealTime,
     required GeoPoint currentPosition,
   }) {
-    return PositionerBlocLocated(
+    return PositionBlocLocated(
       isRealTime: isRealTime,
       currentPosition: currentPosition,
     );
@@ -59,13 +59,13 @@ abstract class PositionerBlocState extends Equatable {
 }
 
 /// It is waiting for a localization request that can only be requested when [canLocalize] is true
-class PositionerBlocIdle extends PositionerBlocState {
+class PositionBlocIdle extends PositionBlocState {
   @override
   final bool hasPermission;
   @override
   final bool isServiceEnabled;
 
-  PositionerBlocIdle({
+  PositionBlocIdle({
     required GeoPoint? lastPosition,
     required this.hasPermission,
     required this.isServiceEnabled,
@@ -76,10 +76,10 @@ class PositionerBlocIdle extends PositionerBlocState {
 }
 
 /// It is locating the user
-class PositionerBlocLocating extends PositionerBlocState {
+class PositionBlocLocating extends PositionBlocState {
   final bool isRealTime;
 
-  PositionerBlocLocating({
+  PositionBlocLocating({
     required GeoPoint? lastPosition,
     required this.isRealTime,
   }) : super(lastPosition: lastPosition);
@@ -89,10 +89,10 @@ class PositionerBlocLocating extends PositionerBlocState {
 }
 
 /// Localization failed
-class PositionerBlocFailed extends PositionerBlocState {
+class PositionBlocFailed extends PositionBlocState {
   final Failure failure;
 
-  PositionerBlocFailed({
+  PositionBlocFailed({
     required GeoPoint? lastPosition,
     required this.failure,
   }) : super(lastPosition: lastPosition);
@@ -103,11 +103,11 @@ class PositionerBlocFailed extends PositionerBlocState {
 
 /// The user has been located
 /// Other positions will be issued if [isRealTime] is true
-class PositionerBlocLocated extends PositionerBlocState {
+class PositionBlocLocated extends PositionBlocState {
   final bool isRealTime;
   final GeoPoint currentPosition;
 
-  PositionerBlocLocated({
+  PositionBlocLocated({
     required this.isRealTime,
     required this.currentPosition,
   }) : super(lastPosition: currentPosition);

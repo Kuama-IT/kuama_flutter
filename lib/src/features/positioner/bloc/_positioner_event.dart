@@ -1,57 +1,63 @@
-part of 'positioner_bloc.dart';
+part of 'position_bloc.dart';
 
-abstract class PositionerBlocEvent extends Equatable {
-  const PositionerBlocEvent();
+abstract class PositionBlocEvent extends Equatable {
+  const PositionBlocEvent();
 
   @override
   bool? get stringify => true;
 }
 
-/// [PositionerBloc.localize]
-class LocalizePositionerBloc extends PositionerBlocEvent {
+/// [PositionBloc.locate]
+class LocatePositionBloc extends PositionBlocEvent {
   final bool isRealTimeRequired;
 
-  LocalizePositionerBloc({this.isRealTimeRequired = false});
+  LocatePositionBloc({this.isRealTimeRequired = false});
 
   @override
   List<Object?> get props => [isRealTimeRequired];
 }
 
-/// [PositionerBloc.deLocalize]
-class DeLocalizePositionerBloc extends PositionerBlocEvent {
-  final bool wasUsingRealTime;
-
-  DeLocalizePositionerBloc({this.wasUsingRealTime = false});
+/// [PositionBloc.track]
+class TrackPositionBloc extends PositionBlocEvent {
+  TrackPositionBloc();
 
   @override
-  List<Object?> get props => [wasUsingRealTime];
+  List<Object?> get props => [];
+}
+
+/// [PositionBloc.unTrack]
+class UnTrackPositionBloc extends PositionBlocEvent {
+  UnTrackPositionBloc();
+
+  @override
+  List<Object?> get props => [];
 }
 
 /// Event to update the status of the position permission
-class _PermissionUpdatePositionerBloc extends PositionerBlocEvent {
+class _PermissionUpdatePositionBloc extends PositionBlocEvent {
   final PermissionBlocState state;
 
-  _PermissionUpdatePositionerBloc(this.state);
+  _PermissionUpdatePositionBloc(this.state);
 
   @override
   List<Object?> get props => [state];
 }
 
 /// Event to update the service status of the position
-class _ServiceUpdatePositionerBloc extends PositionerBlocEvent {
+class _ServiceUpdatePositionBloc extends PositionBlocEvent {
   final bool isServiceEnabled;
 
-  _ServiceUpdatePositionerBloc(this.isServiceEnabled);
+  _ServiceUpdatePositionBloc(this.isServiceEnabled);
 
   @override
   List<Object?> get props => [isServiceEnabled];
 }
 
 /// Event to update the realtime position
-class _PositionUpdatePositionerBloc extends PositionerBlocEvent {
-  final PositionerBlocState state;
+class _PositionUpdatePositionBloc extends PositionBlocEvent {
+  final PositionBlocState state;
 
-  _PositionUpdatePositionerBloc(this.state);
+  _PositionUpdatePositionBloc(this.state);
 
   @override
   List<Object?> get props => [state];

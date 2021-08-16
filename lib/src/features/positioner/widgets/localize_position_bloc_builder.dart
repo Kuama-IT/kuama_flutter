@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kuama_flutter/src/features/permissions/bloc/permission_bloc.dart';
 import 'package:kuama_flutter/src/features/permissions/widgets/request_permission_bloc_builder.dart';
-import 'package:kuama_flutter/src/features/positioner/bloc/positioner_bloc.dart';
+import 'package:kuama_flutter/src/features/positioner/bloc/position_bloc.dart';
 import 'package:kuama_flutter/src/features/positioner/widgets/_utils.dart';
 import 'package:kuama_flutter/src/features/positioner/widgets/ask_enable_position_service_dialog.dart';
 import 'package:kuama_flutter/src/shared/typedefs.dart';
@@ -15,7 +15,7 @@ class LocalizePositionBlocBuilder extends StatelessWidget {
   final Future<void> Function(BuildContext context, PermissionBlocRequestConfirm state)?
       serviceRequester;
   final ButtonBlocWidgetBuilder<PermissionBlocState> permissionBuilder;
-  final ButtonBlocWidgetBuilder<PositionerBlocState> serviceBuilder;
+  final ButtonBlocWidgetBuilder<PositionBlocState> serviceBuilder;
 
   /// The [position] is null when the bloc is processing it
   final Widget Function(BuildContext context, GeoPoint? position) builder;
@@ -29,21 +29,21 @@ class LocalizePositionBlocBuilder extends StatelessWidget {
     required this.builder,
   }) : super(key: key);
 
-  Future<void> _requestService(BuildContext context, PositionerBlocState state) async {
+  Future<void> _requestService(BuildContext context, PositionBlocState state) async {
     await showPositionServiceDialog(
       context: context,
       builder: (context) => AskEnablePositionServiceDialog(),
     );
   }
 
-  Widget _build(BuildContext context, PositionerBlocState state) {
+  Widget _build(BuildContext context, PositionBlocState state) {
     if (!isRealTimeRequired) {
       final position = state.lastPosition;
       if (position != null) {
         return builder(context, position);
       }
     }
-    if (state is PositionerBlocLocated) {
+    if (state is PositionBlocLocated) {
       if (state.isRealTime) {
         return builder(context, state.currentPosition);
       }
@@ -60,9 +60,9 @@ class LocalizePositionBlocBuilder extends StatelessWidget {
           return permissionBuilder(context, state, request);
         }
 
-        return BlocBuilder<PositionerBloc, PositionerBlocState>(
+        return BlocBuilder<PositionBloc, PositionBlocState>(
           builder: (context, state) {
-            if (state is PositionerBlocIdle) {
+            if (state is PositionBlocIdle) {
               return serviceBuilder(context, state, () => _requestService(context, state));
             }
             return _build(context, state);
