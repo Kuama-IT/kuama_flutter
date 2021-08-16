@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kuama_flutter/src/features/permissions/bloc/permission_bloc.dart';
 import 'package:kuama_flutter/src/features/permissions/widgets/ask_allow_permission_dialog.dart';
-import 'package:kuama_flutter/src/features/positioner/bloc/positioner_bloc.dart';
+import 'package:kuama_flutter/src/features/positioner/bloc/position_bloc.dart';
 import 'package:kuama_flutter/src/features/positioner/widgets/ask_enable_position_service_dialog.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -23,12 +23,12 @@ class _OrderPermissionAndServicePermissionBlocListenerState
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      _handleState(context, context.read<PositionerBloc>().state);
+      _handleState(context, context.read<PositionBloc>().state);
     });
   }
 
   Future<void> _handleDialog(
-      BuildContext context, PositionerBlocState state, WidgetBuilder builder) async {
+      BuildContext context, PositionBlocState state, WidgetBuilder builder) async {
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -37,13 +37,13 @@ class _OrderPermissionAndServicePermissionBlocListenerState
     if (result != true) Navigator.of(context).pop();
   }
 
-  void _handleState(BuildContext context, PositionerBlocState state) async {
+  void _handleState(BuildContext context, PositionBlocState state) async {
     if (!state.hasPermission) {
       await _handleDialog(
         context,
         state,
         (context) => OrderAllowPermissionDialog<PermissionBloc>(
-          permissionBloc: context.read<PositionerBloc>().permissionBloc,
+          permissionBloc: context.read<PositionBloc>().permissionBloc,
         ),
       );
       return;
@@ -60,7 +60,7 @@ class _OrderPermissionAndServicePermissionBlocListenerState
 
   @override
   Widget buildWithChild(BuildContext context, Widget? child) {
-    return BlocListener<PositionerBloc, PositionerBlocState>(
+    return BlocListener<PositionBloc, PositionBlocState>(
       listener: _handleState,
       child: child,
     );

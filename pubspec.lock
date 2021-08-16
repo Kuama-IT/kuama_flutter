@@ -254,6 +254,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  geolocator_platform_interface:
+    dependency: "direct main"
+    description:
+      name: geolocator_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.2"
   get_it:
     dependency: "direct main"
     description:

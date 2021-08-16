@@ -17,7 +17,7 @@ import 'package:rxdart/rxdart.dart';
 part '_positioner_event.dart';
 part '_positioner_state.dart';
 
-class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
+class PositionBloc extends Bloc<PositionBlocEvent, PositionBlocState> {
   final CheckPositionService _checkService = GetIt.I();
   final OnPositionServiceChanges _onServiceChanges = GetIt.I();
   final GetCurrentPosition _getCurrentLocation = GetIt.I();
@@ -25,75 +25,72 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
 
   final PositionPermissionBloc permissionBloc;
 
-  final _subs = CompositeSubscription();
-
+  final _permissionSubs = CompositeSubscription();
+  final _serviceSubs = CompositeSubscription();
+  final _positionSubs = CompositeSubscription();
   var _realTimeListenerCount = 0;
-  StreamSubscription? _onPositionChangesSub;
 
-  PositionerBloc({
+  PositionBloc({
     GeoPoint? lastPosition,
     required this.permissionBloc,
-  }) : super(PositionerBlocIdle(
+  }) : super(PositionBlocIdle(
           lastPosition: lastPosition,
           hasPermission: permissionBloc.state.isGranted,
           isServiceEnabled: false,
         )) {
     permissionBloc.stream.listen((permissionState) {
-      add(_PermissionUpdatePositionerBloc(permissionState));
-    }).addTo(_subs);
+      add(_PermissionUpdatePositionBloc(permissionState));
+    }).addTo(_permissionSubs);
     if (permissionBloc.state.isGranted) {
-      _serviceSub = listenServicesStatus();
+      _initServicesStatusListener();
     }
   }
 
-  /// Call it for localize a user. Remember to call [deLocalize] to free up resources
-  ///
-  /// Enable realtime location if you need to receive location updates all the time
-  void localize({bool isRealTimeRequired = false}) =>
-      add(LocalizePositionerBloc(isRealTimeRequired: isRealTimeRequired));
+  /// Call it to locate a user.
+  void locate() => add(LocatePositionBloc());
+
+  /// Call it to track location user. Remember to call [unTrack] to free up resources
+  void track() => add(TrackPositionBloc());
 
   /// It stops listening to the position in realtime when there are no more listeners for it
   ///
   /// It must be called when you were listening to the position in realtime.
   /// There is no need to call it if you weren't listening to the realtime position.
-  void deLocalize({bool wasUsingRealTime = false}) =>
-      add(DeLocalizePositionerBloc(wasUsingRealTime: wasUsingRealTime));
+  void unTrack() => add(UnTrackPositionBloc());
 
   @override
-  Stream<PositionerBlocState> mapEventToState(PositionerBlocEvent event) {
-    if (event is _PermissionUpdatePositionerBloc) {
+  Stream<PositionBlocState> mapEventToState(PositionBlocEvent event) {
+    if (event is _PermissionUpdatePositionBloc) {
       return _mapPermissionUpdate(event.state);
     }
-    if (event is _ServiceUpdatePositionerBloc) {
+    if (event is _ServiceUpdatePositionBloc) {
       return _mapServiceUpdate(event.isServiceEnabled);
     }
 
-    // You do not have the necessary credentials to be able to locate the user
-    if (!state.canLocalize) {
-      return Stream.empty();
+    if (event is LocatePositionBloc) {
+      return _mapLocate(event);
     }
-
-    if (event is LocalizePositionerBloc) {
-      return _mapLocalize(event);
+    if (event is TrackPositionBloc) {
+      return _mapTrack(event);
     }
-    if (event is _PositionUpdatePositionerBloc) {
+    if (event is _PositionUpdatePositionBloc) {
+      if (!state.canLocalize) return Stream.empty();
       return Stream.value(event.state);
     }
-    if (event is DeLocalizePositionerBloc) {
-      return _mapDeLocalize(event);
+    if (event is UnTrackPositionBloc) {
+      return _mapUnTrack(event);
     }
     throw UnimplementedError('$event');
   }
 
   Future<void> _restoreBloc() async {
-    _realTimeListenerCount = 0;
-    await _onPositionChangesSub?.cancel();
+    _positionSubs.clear();
   }
 
-  StreamSubscription? _serviceSub;
-
-  StreamSubscription listenServicesStatus() {
-    return Rx.concatEager([
+  /// Start listening for the service status
+  void _initServicesStatusListener() {
+    if (_serviceSubs.isNotEmpty) return;
+    Rx.concatEager([
       _checkService.call(NoParams()).asStream(),
       _onServiceChanges.call(NoParams()),
     ]).listen((res) {
@@ -101,13 +98,17 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
         // Todo: emit failure
         lg.e('Error on PositionerBloc $failure');
       }, (isServiceEnabled) {
-        add(_ServiceUpdatePositionerBloc(isServiceEnabled));
+        add(_ServiceUpdatePositionBloc(isServiceEnabled));
       });
-    });
+    }).addTo(_serviceSubs);
+  }
+
+  void _cancelServiceStatusListener() {
+    _serviceSubs.clear();
   }
 
   /// Update current status based on permission state
-  Stream<PositionerBlocState> _mapPermissionUpdate(PermissionBlocState permissionState) async* {
+  Stream<PositionBlocState> _mapPermissionUpdate(PermissionBlocState permissionState) async* {
     // Skip all elaborating request states
     if (permissionState is PermissionBlocRequesting ||
         permissionState is PermissionBlocRequestConfirm) {
@@ -120,7 +121,7 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
 
     // Permission has been revoked, clean up and update the bloc state
     if (!hasPermission) {
-      await _serviceSub?.cancel();
+      _cancelServiceStatusListener();
       await _restoreBloc();
       yield state.toIdle(hasPermission: false);
       return;
@@ -128,7 +129,7 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
     // Permission has been granted, update the bloc state
     if (!state.hasPermission) {
       // listen service status only after app gets the position permission
-      _serviceSub ??= listenServicesStatus();
+      _initServicesStatusListener();
       yield state.toIdle(hasPermission: true);
       return;
     }
@@ -136,7 +137,9 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
   }
 
   /// Update current status based on service status
-  Stream<PositionerBlocState> _mapServiceUpdate(bool isServiceEnabled) async* {
+  ///
+  /// If the position has been requested in realtime, listening will be started
+  Stream<PositionBlocState> _mapServiceUpdate(bool isServiceEnabled) async* {
     // Service is disabled, clean up and update the bloc state
     if (!isServiceEnabled) {
       await _restoreBloc();
@@ -146,21 +149,22 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
     // Service is enabled, update the bloc state
     if (!state.isServiceEnabled) {
       yield state.toIdle(isServiceEnabled: true);
+
+      if (_realTimeListenerCount <= 0) return;
+
+      yield state.toLocating(isRealTime: true);
+      _initPositionListener();
       return;
     }
     // No major changes. The bloc already has service status updated
   }
 
-  /// Resolves the location request
+  /// It will output the current position once
   ///
-  /// If only the current position is requested, it will output the current position once
-  /// If realtime position is requested it will output current position many times
-  ///
-  /// If realtime position is active and you have requested only the current position wait for the next realtime position
-  Stream<PositionerBlocState> _mapLocalize(LocalizePositionerBloc event) async* {
-    if (event.isRealTimeRequired) {
-      _realTimeListenerCount++;
-    }
+  /// If the realtime position is active the last position is valid
+  Stream<PositionBlocState> _mapLocate(LocatePositionBloc event) async* {
+    // You do not have the necessary credentials to be able to locate the user
+    if (!state.canLocalize) return;
 
     // If bloc is not listening to realtime position, it will shortly output the current position
     if (_realTimeListenerCount <= 0) {
@@ -174,16 +178,11 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
       });
       return;
     }
+  }
 
-    // Already listen realtime position events
-    if (_onPositionChangesSub != null) {
-      return;
-    }
-
-    yield state.toLocating(isRealTime: true);
-
-    // Listen realtime position
-    _onPositionChangesSub = Rx.concatEager([
+  /// Listen realtime position
+  void _initPositionListener() {
+    Rx.concatEager([
       _getCurrentLocation.call(NoParams()).asStream(),
       _onPositionChanges.call(NoParams()),
     ]).listen((res) {
@@ -192,30 +191,53 @@ class PositionerBloc extends Bloc<PositionerBlocEvent, PositionerBlocState> {
       }, (position) {
         return state.toLocated(isRealTime: true, currentPosition: position);
       });
-      add(_PositionUpdatePositionerBloc(nextState));
-    });
+      add(_PositionUpdatePositionBloc(nextState));
+    }).addTo(_positionSubs);
+  }
+
+  /// It will output current position many times
+  ///
+  /// If it is not possible to have the position in real time, it will be requested as soon as possible
+  /// If the realtime position is already requested, no operation is performed
+  Stream<PositionBlocState> _mapTrack(TrackPositionBloc event) async* {
+    _realTimeListenerCount++;
+
+    // You do not have the necessary credentials to be able to locate the user
+    if (!state.canLocalize) return;
+
+    // Already listen realtime position events
+    if (_positionSubs.isNotEmpty) {
+      return;
+    }
+
+    yield state.toLocating(isRealTime: true);
+
+    _initPositionListener();
   }
 
   /// Stop listening to the actual location if there are no more listeners for it
-  Stream<PositionerBlocState> _mapDeLocalize(DeLocalizePositionerBloc event) async* {
+  Stream<PositionBlocState> _mapUnTrack(UnTrackPositionBloc event) async* {
     // Reduce the counter of listeners only if it has at least one
-    if (event.wasUsingRealTime && _realTimeListenerCount > 0) {
-      _realTimeListenerCount--;
-    }
+    if (_realTimeListenerCount > 0) _realTimeListenerCount--;
+
+    // You do not have the necessary credentials to be able to locate the user
+    if (!state.canLocalize) return;
+
     // Other listeners are listening to the position in realtime
-    if (_realTimeListenerCount >= 1) {
+    if (_realTimeListenerCount > 0) {
       return;
     }
 
     // Nobody is listening to the real position
-    await _onPositionChangesSub?.cancel();
+    _positionSubs.clear();
     yield state.toIdle(hasPermission: true, isServiceEnabled: true);
   }
 
   @override
   Future<void> close() {
-    _onPositionChangesSub?.cancel();
-    _subs.dispose();
+    _positionSubs.dispose();
+    _serviceSubs.dispose();
+    _permissionSubs.dispose();
     return super.close();
   }
 }
