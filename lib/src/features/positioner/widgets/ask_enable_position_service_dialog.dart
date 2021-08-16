@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/app_pages/use_cases/open_settings_app_page.dart';
-import 'package:kuama_flutter/src/features/positioner/bloc/positioner_bloc.dart';
+import 'package:kuama_flutter/src/features/positioner/bloc/position_bloc.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
 import 'package:kuama_flutter/src/shared/widgets/change_handler.dart';
 import 'package:kuama_flutter/src/shared/widgets/dialogs/app_settings_dialog.dart';
@@ -13,7 +13,7 @@ class AskEnablePositionServiceDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PositionerBloc, PositionerBlocState>(
+    return BlocListener<PositionBloc, PositionBlocState>(
       listenWhen: (prev, curr) =>
           prev.isServiceEnabled != curr.isServiceEnabled && curr.isServiceEnabled,
       // Auto closing of the dialog when the service has been enabled
@@ -38,15 +38,15 @@ class OrderEnablePositionServiceDialog extends StatelessWidget {
   }) : super(key: key);
 
   // Auto closing of the dialog when the service has been enabled
-  void _onState(BuildContext context, PositionerBlocState state) {
+  void _onState(BuildContext context, PositionBlocState state) {
     if (state.isServiceEnabled) Navigator.of(context).pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocChangeHandler<PositionerBloc, PositionerBlocState>(
+    return BlocChangeHandler<PositionBloc, PositionBlocState>(
       onAcquired: _onState,
-      child: BlocListener<PositionerBloc, PositionerBlocState>(
+      child: BlocListener<PositionBloc, PositionBlocState>(
         listenWhen: (prev, curr) => prev.isServiceEnabled != curr.isServiceEnabled,
         listener: _onState,
         child: WillPopScope(
