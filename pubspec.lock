@@ -29,20 +29,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
-  basic_utils:
-    dependency: transitive
-    description:
-      name: basic_utils
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.0"
   bloc:
     dependency: "direct main"
     description:
       name: bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.0.0"
+    version: "7.1.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -189,7 +182,7 @@ packages:
       name: dartz
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.0-nullsafety.2"
+    version: "0.10.0"
   dio:
     dependency: "direct main"
     description:
@@ -243,7 +236,7 @@ packages:
       name: flutter_bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.0.1"
+    version: "7.1.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -282,13 +275,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  http:
-    dependency: transitive
-    description:
-      name: http
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.13.3"
   http_multi_server:
     dependency: transitive
     description:
@@ -443,13 +429,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  pointycastle:
-    dependency: transitive
-    description:
-      name: pointycastle
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.2"
   pool:
     dependency: transitive
     description:
@@ -491,7 +470,7 @@ packages:
       name: pure_extensions
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.0"
+    version: "3.3.0"
   rational:
     dependency: transitive
     description:

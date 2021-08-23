@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/failure.dart';
 import 'package:kuama_flutter/src/shared/utils/debuggable.dart';
+import 'package:meta/meta.dart';
+import 'package:rxdart/rxdart.dart';
 
 abstract class Params extends Equatable {
   const Params();
@@ -24,6 +26,7 @@ class NoParams extends Params {
   final List<Object?> props = const <Object?>[];
 }
 
+@Deprecated('In favour of [Params]')
 abstract class ParamsBase extends Params {
   const ParamsBase(this.props);
 
@@ -34,8 +37,11 @@ abstract class ParamsBase extends Params {
   final List<Object?> props;
 }
 
-abstract class _UseCaseBase<TParams> {
-  Failure _onHandleError(TParams params, Object error, StackTrace stackTrace) {
+abstract class UseCaseBase<TParams, TResult> {
+  TResult call(TParams params);
+
+  @visibleForOverriding
+  Failure onMapErrorToFailure(TParams params, Object error, StackTrace stackTrace) {
     if (error is DioError) {
       return HttpClientFailure(error: error, stackTrace: stackTrace);
     }
@@ -46,41 +52,46 @@ abstract class _UseCaseBase<TParams> {
     return UnhandledFailure(error, stackTrace);
   }
 
-  Failure _handleError(TParams params, Object error, StackTrace stackTrace) {
+  @protected
+  Failure mapErrorToFailure(TParams params, Object error, StackTrace stackTrace) {
     if (error is Failure) {
       lg.w(Debuggable({'UseCaseFailure($runtimeType)': params}), error, stackTrace);
       return error;
     }
 
-    final failure = _onHandleError(params, error, stackTrace);
+    final failure = onMapErrorToFailure(params, error, stackTrace);
     lg.w(Debuggable({'UseCaseError($runtimeType)': params}), failure, stackTrace);
     return failure;
   }
 }
 
-abstract class UseCase<TParams, TResult> extends _UseCaseBase<TParams> {
+abstract class UseCase<TParams, TResult>
+    extends UseCaseBase<TParams, Future<Either<Failure, TResult>>> {
+  @override
   Future<Either<Failure, TResult>> call(TParams params) async {
     try {
       return await tryCall(params);
     } catch (error, stackTrace) {
-      return Left(_handleError(params, error, stackTrace));
+      return Left(mapErrorToFailure(params, error, stackTrace));
     }
   }
 
+  @visibleForTesting
+  @visibleForOverriding
   Future<Either<Failure, TResult>> tryCall(TParams params);
 }
 
-abstract class StreamUseCase<TParams, TResult> extends _UseCaseBase<TParams> {
-  Stream<Either<Failure, TResult>> call(TParams params) async* {
-    try {
-      await for (final result in tryCall(params)) {
-        yield result;
-      }
-    } catch (error, stackTrace) {
-      yield Left(_handleError(params, error, stackTrace));
-    }
+abstract class StreamUseCase<TParams, TResult>
+    extends UseCaseBase<TParams, Stream<Either<Failure, TResult>>> {
+  @override
+  Stream<Either<Failure, TResult>> call(TParams params) {
+    return tryCall(params).onErrorReturnWith((error, stackTrace) {
+      return Left(mapErrorToFailure(params, error, stackTrace));
+    });
   }
 
+  @visibleForTesting
+  @visibleForOverriding
   Stream<Either<Failure, TResult>> tryCall(TParams params);
 }
 
@@ -103,20 +114,20 @@ class ProgressSnapshot<TResult> extends Equatable {
   String toString() => '$ProgressSnapshot{progress:$progress,result$_result}';
 }
 
-abstract class ProgressUseCase<TParams, TResult> extends _UseCaseBase<TParams> {
-  Stream<ProgressSnapshot<TResult>> call(TParams params) async* {
-    try {
-      await for (final result in tryCall(params)) {
-        yield result;
-      }
-    } catch (error, stackTrace) {
-      yield ProgressSnapshot(
+abstract class ProgressUseCase<TParams, TResult>
+    extends UseCaseBase<TParams, Stream<ProgressSnapshot<TResult>>> {
+  @override
+  Stream<ProgressSnapshot<TResult>> call(TParams params) {
+    return tryCall(params).onErrorReturnWith((error, stackTrace) {
+      return ProgressSnapshot(
         progress: 1.0,
-        result: Left(_handleError(params, error, stackTrace)),
+        result: Left(mapErrorToFailure(params, error, stackTrace)),
       );
-    }
+    });
   }
 
+  @visibleForTesting
+  @visibleForOverriding
   Stream<ProgressSnapshot<TResult>> tryCall(TParams params);
 }
 
