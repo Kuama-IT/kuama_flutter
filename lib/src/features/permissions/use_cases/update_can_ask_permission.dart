@@ -5,11 +5,14 @@ import 'package:kuama_flutter/src/features/permissions/repositories/permission_p
 import 'package:kuama_flutter/src/shared/feature_structure/failure.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
 
-class UpdateCanAskPermissionParams extends ParamsBase {
+class UpdateCanAskPermissionParams extends Params {
   final Permission permission;
   final bool canAsk;
 
-  UpdateCanAskPermissionParams(this.permission, this.canAsk) : super([permission, canAsk]);
+  UpdateCanAskPermissionParams(this.permission, this.canAsk);
+
+  @override
+  List<Object?> get props => [permission, canAsk];
 }
 
 /// Update if the permit can be requested
