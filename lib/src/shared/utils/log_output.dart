@@ -1,6 +1,7 @@
 import 'dart:developer' as d;
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/shared/utils/debuggable.dart';
 import 'package:kuama_flutter/src/shared/utils/logger.dart';
@@ -69,5 +70,14 @@ class ConsoleLogOutput extends LogOutput {
     PrettyFormatter.i.convertInLines(info).forEach((line) {
       d.log(line, name: levelName);
     });
+  }
+}
+
+class FlutterConsoleLogOutput extends LogOutput {
+  @override
+  Future<void> write(Log log, Map<String, dynamic> info) async {
+    debugPrint(PrettyFormatter.i.convertInLines(info).map((line) {
+      return '[${log.level.name}] $line';
+    }).join('\n'));
   }
 }
