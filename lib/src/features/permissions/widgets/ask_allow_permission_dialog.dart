@@ -32,6 +32,10 @@ class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
         return Text('Allow to access your location while you are using the app?');
       case Permission.backgroundPosition:
         return Text('Allow to access your location in background?');
+      case Permission.notification:
+        return Text('Allow to receive notifications');
+      case Permission.camera:
+        return Text('Allow to access your camera?');
     }
   }
 

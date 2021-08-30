@@ -2,6 +2,10 @@ enum Permission {
   contacts,
   position,
   backgroundPosition,
+
+  /// In Android returns always true
+  notification,
+  camera,
 }
 
 extension PermissionNameExtension on Permission {

@@ -4,6 +4,7 @@ import 'package:kuama_flutter/src/features/permissions/repositories/permission_r
 import 'package:kuama_flutter/src/shared/library_exports.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart'
     as ph;
+import 'package:synchronized/synchronized.dart';
 
 /// [PermissionRepository]
 ///
@@ -12,6 +13,9 @@ import 'package:permission_handler_platform_interface/permission_handler_platfor
 ///   This will then bring up another permission popup asking you to `Keep Only While Using` or to `Change To Always Allow`.
 class PermissionRepositoryImpl implements PermissionRepository {
   final ph.PermissionHandlerPlatform permissionHandler = GetIt.I();
+
+  /// You can only make one request at a time
+  static final _locker = Lock();
 
   /// [PermissionRepository.check]
   @override
@@ -27,12 +31,14 @@ class PermissionRepositoryImpl implements PermissionRepository {
   /// [PermissionRepository.request]
   @override
   Future<PermissionStatus> request(Permission permission) async {
-    final pluginPermission = permission.toPermissionHandler();
-    final pluginStatus = await _request(pluginPermission);
-    final status = pluginStatus.toStatus();
-    lg.v(
-        'PermissionRepositoryImpl.request | $permission -> $pluginPermission | $pluginStatus -> $status');
-    return status;
+    return await _locker.synchronized(() async {
+      final pluginPermission = permission.toPermissionHandler();
+      final pluginStatus = await _request(pluginPermission);
+      final status = pluginStatus.toStatus();
+      lg.v(
+          'PermissionRepositoryImpl.request | $permission -> $pluginPermission | $pluginStatus -> $status');
+      return status;
+    });
   }
 
   Future<ph.PermissionStatus> _request(ph.Permission permission) async {
@@ -58,9 +64,7 @@ class PermissionRepositoryImpl implements PermissionRepository {
   }
 }
 
-extension PermissionToPermissionHandler on Permission {
-  bool get isBackgroundPosition => this == Permission.backgroundPosition;
-
+extension _PermissionToPermissionHandler on Permission {
   ph.Permission toPermissionHandler() {
     switch (this) {
       case Permission.contacts:
@@ -69,11 +73,15 @@ extension PermissionToPermissionHandler on Permission {
         return ph.Permission.locationWhenInUse;
       case Permission.backgroundPosition:
         return ph.Permission.locationAlways;
+      case Permission.notification:
+        return ph.Permission.notification;
+      case Permission.camera:
+        return ph.Permission.camera;
     }
   }
 }
 
-extension PermissionStatusHandlerToPermissionStatus on ph.PermissionStatus {
+extension _PermissionStatusHandlerToPermissionStatus on ph.PermissionStatus {
   PermissionStatus toStatus() {
     switch (this) {
       case ph.PermissionStatus.permanentlyDenied:
