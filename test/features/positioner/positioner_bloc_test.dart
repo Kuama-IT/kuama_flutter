@@ -28,7 +28,7 @@ void main() {
 
   late PositionBloc bloc;
 
-  final tPermission = Permission.position;
+  const tPermission = Permission.position;
 
   setUp(() {
     GetIt.instance
@@ -47,11 +47,12 @@ void main() {
     mockPermissionBloc = MockPositionPermissionBloc();
 
     when(mockPermissionBloc.state).thenReturn(permission == EmissionType.alreadyHas
-        ? PermissionBlocRequested(permission: tPermission, status: PermissionStatus.granted)
-        : PermissionBlocRequested(permission: tPermission, status: PermissionStatus.denied));
+        ? const PermissionBlocRequested(permission: tPermission, status: PermissionStatus.granted)
+        : const PermissionBlocRequested(permission: tPermission, status: PermissionStatus.denied));
     when(mockPermissionBloc.stream).thenAnswer((_) async* {
       if (permission == EmissionType.acquire) {
-        yield PermissionBlocRequested(permission: tPermission, status: PermissionStatus.granted);
+        yield const PermissionBlocRequested(
+            permission: tPermission, status: PermissionStatus.granted);
       }
     });
     when(mockCheckService.call(NoParams())).thenAnswer((realInvocation) async {
@@ -59,7 +60,7 @@ void main() {
     });
     when(mockOnServiceChanges.call(NoParams())).thenAnswer((_) async* {
       if (service == EmissionType.acquire) {
-        yield Right(true);
+        yield const Right(true);
       }
     });
 
@@ -84,7 +85,7 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: null,
             hasPermission: true,
             isServiceEnabled: false,
@@ -114,12 +115,12 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: null,
             hasPermission: true,
             isServiceEnabled: false,
           ),
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: null,
             hasPermission: true,
             isServiceEnabled: true,
@@ -134,7 +135,7 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: null,
             hasPermission: true,
             isServiceEnabled: true,
@@ -143,7 +144,7 @@ void main() {
       );
 
       when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
-        return Right(GeoPoint(0.0, 0.0));
+        return const Right(GeoPoint(0.0, 0.0));
       });
 
       bloc.locate();
@@ -151,11 +152,11 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocLocating(
+          const PositionBlocLocating(
             isRealTime: false,
             lastPosition: null,
           ),
-          PositionBlocLocated(
+          const PositionBlocLocated(
             isRealTime: false,
             currentPosition: GeoPoint(0.0, 0.0),
           ),
@@ -167,7 +168,7 @@ void main() {
       expect(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: GeoPoint(0.0, 0.0),
             hasPermission: true,
             isServiceEnabled: true,
@@ -185,7 +186,7 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: null,
             hasPermission: true,
             isServiceEnabled: true,
@@ -194,11 +195,11 @@ void main() {
       );
 
       when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
-        return Right(GeoPoint(0.0, 0.0));
+        return const Right(GeoPoint(0.0, 0.0));
       });
       when(mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {
         await Future.delayed(const Duration());
-        yield Right(GeoPoint(1.0, 1.0));
+        yield const Right(GeoPoint(1.0, 1.0));
       });
 
       // ======== Test user tracking ========
@@ -208,15 +209,15 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocLocating(
+          const PositionBlocLocating(
             isRealTime: true,
             lastPosition: null,
           ),
-          PositionBlocLocated(
+          const PositionBlocLocated(
             isRealTime: true,
             currentPosition: GeoPoint(0.0, 0.0),
           ),
-          PositionBlocLocated(
+          const PositionBlocLocated(
             isRealTime: true,
             currentPosition: GeoPoint(1.0, 1.0),
           ),
@@ -228,7 +229,7 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: GeoPoint(1.0, 1.0),
             hasPermission: true,
             isServiceEnabled: true,
@@ -243,15 +244,15 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocLocating(
+          const PositionBlocLocating(
             isRealTime: true,
             lastPosition: GeoPoint(1.0, 1.0),
           ),
-          PositionBlocLocated(
+          const PositionBlocLocated(
             isRealTime: true,
             currentPosition: GeoPoint(0.0, 0.0),
           ),
-          PositionBlocLocated(
+          const PositionBlocLocated(
             isRealTime: true,
             currentPosition: GeoPoint(1.0, 1.0),
           ),
@@ -263,7 +264,7 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: GeoPoint(1.0, 1.0),
             hasPermission: true,
             isServiceEnabled: true,
@@ -285,17 +286,17 @@ void main() {
 
     test('More listeners are registered, manage as if it were one', () async {
       init(permission: EmissionType.alreadyHas, service: EmissionType.alreadyHas);
-      bloc.emit(PositionBlocIdle(
+      bloc.emit(const PositionBlocIdle(
         lastPosition: null,
         hasPermission: true,
         isServiceEnabled: true,
       ));
 
       when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
-        return Right(GeoPoint(0.0, 0.0));
+        return const Right(GeoPoint(0.0, 0.0));
       });
       when(mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {
-        yield Right(GeoPoint(0.0, 0.0));
+        yield const Right(GeoPoint(0.0, 0.0));
       });
 
       bloc.track();
@@ -305,11 +306,11 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocLocating(
+          const PositionBlocLocating(
             isRealTime: true,
             lastPosition: null,
           ),
-          PositionBlocLocated(
+          const PositionBlocLocated(
             isRealTime: true,
             currentPosition: GeoPoint(0.0, 0.0),
           ),
@@ -325,7 +326,7 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: GeoPoint(0.0, 0.0),
             hasPermission: true,
             isServiceEnabled: true,
@@ -345,7 +346,7 @@ void main() {
 
     test('Emit real time position after bloc is initialized but track request before it', () async {
       when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
-        return Right(GeoPoint(0.0, 0.0));
+        return const Right(GeoPoint(0.0, 0.0));
       });
       when(mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {});
 
@@ -356,21 +357,21 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder([
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: null,
             hasPermission: true,
             isServiceEnabled: false,
           ),
-          PositionBlocIdle(
+          const PositionBlocIdle(
             lastPosition: null,
             hasPermission: true,
             isServiceEnabled: true,
           ),
-          PositionBlocLocating(
+          const PositionBlocLocating(
             isRealTime: true,
             lastPosition: null,
           ),
-          PositionBlocLocated(
+          const PositionBlocLocated(
             isRealTime: true,
             currentPosition: GeoPoint(0.0, 0.0),
           ),

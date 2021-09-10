@@ -11,7 +11,7 @@ abstract class PermissionEvent extends Equatable {
 class LoadPermissionBloc extends PermissionEvent {
   final bool isLazy;
 
-  LoadPermissionBloc({this.isLazy = false});
+  const LoadPermissionBloc({this.isLazy = false});
 
   @override
   List<Object?> get props => [isLazy];
@@ -21,7 +21,7 @@ class LoadPermissionBloc extends PermissionEvent {
 class ConfirmRequestPermissionBloc extends PermissionEvent {
   final bool canRequest;
 
-  ConfirmRequestPermissionBloc(this.canRequest);
+  const ConfirmRequestPermissionBloc(this.canRequest);
 
   @override
   List<Object?> get props => const [];
@@ -32,7 +32,7 @@ class RequestPermissionBloc extends PermissionEvent {
   final bool canForce;
   final bool? isConfirmRequired;
 
-  RequestPermissionBloc({this.canForce = false, this.isConfirmRequired});
+  const RequestPermissionBloc({this.canForce = false, this.isConfirmRequired});
 
   @override
   List<Object?> get props => [canForce, isConfirmRequired];

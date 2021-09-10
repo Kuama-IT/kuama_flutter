@@ -11,7 +11,7 @@ class OpenSettingsAppPage extends UseCase<NoParams, bool> {
   final AppPagesRepository launcherRepo = GetIt.I();
 
   @override
-  Future<Either<Failure, bool>> tryCall(NoParams _) async {
+  Future<Either<Failure, bool>> tryCall(NoParams params) async {
     return launcherRepo.openSettings().toRight();
   }
 }

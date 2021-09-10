@@ -65,7 +65,7 @@ class PositionBlocIdle extends PositionBlocState {
   @override
   final bool isServiceEnabled;
 
-  PositionBlocIdle({
+  const PositionBlocIdle({
     required GeoPoint? lastPosition,
     required this.hasPermission,
     required this.isServiceEnabled,
@@ -79,7 +79,7 @@ class PositionBlocIdle extends PositionBlocState {
 class PositionBlocLocating extends PositionBlocState {
   final bool isRealTime;
 
-  PositionBlocLocating({
+  const PositionBlocLocating({
     required GeoPoint? lastPosition,
     required this.isRealTime,
   }) : super(lastPosition: lastPosition);
@@ -92,7 +92,7 @@ class PositionBlocLocating extends PositionBlocState {
 class PositionBlocFailed extends PositionBlocState {
   final Failure failure;
 
-  PositionBlocFailed({
+  const PositionBlocFailed({
     required GeoPoint? lastPosition,
     required this.failure,
   }) : super(lastPosition: lastPosition);
@@ -107,7 +107,7 @@ class PositionBlocLocated extends PositionBlocState {
   final bool isRealTime;
   final GeoPoint currentPosition;
 
-  PositionBlocLocated({
+  const PositionBlocLocated({
     required this.isRealTime,
     required this.currentPosition,
   }) : super(lastPosition: currentPosition);

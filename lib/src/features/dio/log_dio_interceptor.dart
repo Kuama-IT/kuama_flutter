@@ -51,15 +51,15 @@ class LogDioInterceptor with Interceptor {
   }
 
   @override
-  void onError(DioError error, ErrorInterceptorHandler handler) {
+  void onError(DioError err, ErrorInterceptorHandler handler) {
     if (canLogError) {
       _logError({
-        'DioError(${error.type})': error.message,
-        if (error.response != null) ..._mapResponse(error.response!),
-        if (error is Error) 'DioErrorStackTrace': (error as Error).stackTrace,
+        'DioError(${err.type})': err.message,
+        if (err.response != null) ..._mapResponse(err.response!),
+        if (err is Error) 'DioErrorStackTrace': (err as Error).stackTrace,
       });
     }
-    if (!handler.isCompleted) handler.next(error);
+    if (!handler.isCompleted) handler.next(err);
   }
 
   Map<String, dynamic> _mapHeaders(Map<String, List<String>> headers) {
