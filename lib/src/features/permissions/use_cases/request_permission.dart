@@ -12,7 +12,9 @@ class RequestPermission extends UseCase<Permission, PermissionStatus> {
   final PermissionRepository permissionsRepo = GetIt.I();
 
   @override
-  Future<Either<Failure, PermissionStatus>> tryCall(Permission permission) async {
+  Future<Either<Failure, PermissionStatus>> tryCall(Permission params) async {
+    final permission = params;
+
     return permissionsRepo.request(permission).toRight();
   }
 }

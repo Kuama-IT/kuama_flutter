@@ -47,16 +47,16 @@ class PositionBloc extends Bloc<PositionBlocEvent, PositionBlocState> {
   }
 
   /// Call it to locate a user.
-  void locate() => add(LocatePositionBloc());
+  void locate() => add(const LocatePositionBloc());
 
   /// Call it to track location user. Remember to call [unTrack] to free up resources
-  void track() => add(TrackPositionBloc());
+  void track() => add(const TrackPositionBloc());
 
   /// It stops listening to the position in realtime when there are no more listeners for it
   ///
   /// It must be called when you were listening to the position in realtime.
   /// There is no need to call it if you weren't listening to the realtime position.
-  void unTrack() => add(UnTrackPositionBloc());
+  void unTrack() => add(const UnTrackPositionBloc());
 
   @override
   Stream<PositionBlocState> mapEventToState(PositionBlocEvent event) {
@@ -74,7 +74,7 @@ class PositionBloc extends Bloc<PositionBlocEvent, PositionBlocState> {
       return _mapTrack(event);
     }
     if (event is _PositionUpdatePositionBloc) {
-      if (!state.canLocalize) return Stream.empty();
+      if (!state.canLocalize) return const Stream.empty();
       return Stream.value(event.state);
     }
     if (event is UnTrackPositionBloc) {

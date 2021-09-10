@@ -11,7 +11,7 @@ abstract class PositionBlocEvent extends Equatable {
 class LocatePositionBloc extends PositionBlocEvent {
   final bool isRealTimeRequired;
 
-  LocatePositionBloc({this.isRealTimeRequired = false});
+  const LocatePositionBloc({this.isRealTimeRequired = false});
 
   @override
   List<Object?> get props => [isRealTimeRequired];
@@ -19,7 +19,7 @@ class LocatePositionBloc extends PositionBlocEvent {
 
 /// [PositionBloc.track]
 class TrackPositionBloc extends PositionBlocEvent {
-  TrackPositionBloc();
+  const TrackPositionBloc();
 
   @override
   List<Object?> get props => [];
@@ -27,7 +27,7 @@ class TrackPositionBloc extends PositionBlocEvent {
 
 /// [PositionBloc.unTrack]
 class UnTrackPositionBloc extends PositionBlocEvent {
-  UnTrackPositionBloc();
+  const UnTrackPositionBloc();
 
   @override
   List<Object?> get props => [];
@@ -37,7 +37,7 @@ class UnTrackPositionBloc extends PositionBlocEvent {
 class _PermissionUpdatePositionBloc extends PositionBlocEvent {
   final PermissionBlocState state;
 
-  _PermissionUpdatePositionBloc(this.state);
+  const _PermissionUpdatePositionBloc(this.state);
 
   @override
   List<Object?> get props => [state];
@@ -47,7 +47,7 @@ class _PermissionUpdatePositionBloc extends PositionBlocEvent {
 class _ServiceUpdatePositionBloc extends PositionBlocEvent {
   final bool isServiceEnabled;
 
-  _ServiceUpdatePositionBloc(this.isServiceEnabled);
+  const _ServiceUpdatePositionBloc(this.isServiceEnabled);
 
   @override
   List<Object?> get props => [isServiceEnabled];
@@ -57,7 +57,7 @@ class _ServiceUpdatePositionBloc extends PositionBlocEvent {
 class _PositionUpdatePositionBloc extends PositionBlocEvent {
   final PositionBlocState state;
 
-  _PositionUpdatePositionBloc(this.state);
+  const _PositionUpdatePositionBloc(this.state);
 
   @override
   List<Object?> get props => [state];

@@ -102,7 +102,7 @@ class ProgressSnapshot<TResult> extends Equatable {
   bool get hasResult => _result != null;
   Either<Failure, TResult> get result => _result!;
 
-  ProgressSnapshot({
+  const ProgressSnapshot({
     required this.progress,
     Either<Failure, TResult>? result,
   }) : _result = result;

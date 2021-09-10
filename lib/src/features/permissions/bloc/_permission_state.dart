@@ -83,7 +83,7 @@ abstract class PermissionBlocState extends Equatable {
 
 /// The bloc has been loaded. Now you can interact with it
 class PermissionBlocLoaded extends PermissionBlocState {
-  PermissionBlocLoaded({required Permission permission}) : super(permission: permission);
+  const PermissionBlocLoaded({required Permission permission}) : super(permission: permission);
 
   @override
   List<Object?> get props => [permission];
@@ -91,7 +91,7 @@ class PermissionBlocLoaded extends PermissionBlocState {
 
 /// It is processing the request wait for a later status to interact with the bloc
 class PermissionBlocRequesting extends PermissionBlocState {
-  PermissionBlocRequesting({required Permission permission}) : super(permission: permission);
+  const PermissionBlocRequesting({required Permission permission}) : super(permission: permission);
 
   @override
   List<Object?> get props => [permission];
@@ -101,7 +101,7 @@ class PermissionBlocRequesting extends PermissionBlocState {
 class PermissionBlocRequestFailed extends PermissionBlocState {
   final Failure failure;
 
-  PermissionBlocRequestFailed({
+  const PermissionBlocRequestFailed({
     required Permission permission,
     required this.failure,
   }) : super(permission: permission);
@@ -112,7 +112,8 @@ class PermissionBlocRequestFailed extends PermissionBlocState {
 
 /// A state in which a confirmation of the request by the user is required
 class PermissionBlocRequestConfirm extends PermissionBlocState {
-  PermissionBlocRequestConfirm({required Permission permission}) : super(permission: permission);
+  const PermissionBlocRequestConfirm({required Permission permission})
+      : super(permission: permission);
 
   @override
   List<Object?> get props => [permission];
@@ -122,7 +123,7 @@ class PermissionBlocRequestConfirm extends PermissionBlocState {
 class PermissionBlocRequested extends PermissionBlocState {
   final PermissionStatus status;
 
-  PermissionBlocRequested({
+  const PermissionBlocRequested({
     required Permission permission,
     required this.status,
   }) : super(permission: permission);

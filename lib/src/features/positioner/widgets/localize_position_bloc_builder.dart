@@ -32,7 +32,7 @@ class LocalizePositionBlocBuilder extends StatelessWidget {
   Future<void> _requestService(BuildContext context, PositionBlocState state) async {
     await showPositionServiceDialog(
       context: context,
-      builder: (context) => AskEnablePositionServiceDialog(),
+      builder: (context) => const AskEnablePositionServiceDialog(),
     );
   }
 

@@ -56,7 +56,7 @@ class _RefreshPermissionBlocListenerState<TPermissionBloc extends PermissionBloc
 class RefreshListPermissionBlocListener extends SingleChildStatelessWidget {
   final List<PermissionBloc> permissionBlocs;
 
-  RefreshListPermissionBlocListener({
+  const RefreshListPermissionBlocListener({
     Key? key,
     required this.permissionBlocs,
     Widget? child,
