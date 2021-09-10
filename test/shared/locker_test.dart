@@ -21,7 +21,7 @@ void main() {
         debugLabels.add(l(workNumber, _Tag.waitLock));
         final unLock = await unLockDone;
         debugLabels.add(l(workNumber, _Tag.working));
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 100));
         debugLabels.add(l(workNumber, _Tag.unLocked));
         unLock();
       }

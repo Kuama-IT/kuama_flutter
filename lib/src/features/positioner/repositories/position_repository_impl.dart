@@ -1,7 +1,7 @@
 import 'package:geolocator_platform_interface/geolocator_platform_interface.dart';
 import 'package:kuama_flutter/kuama_flutter.dart';
 import 'package:kuama_flutter/positioner.dart';
-import 'package:pure_extensions/src/dart/primitives/geo_point.dart';
+import 'package:pure_extensions/pure_extensions.dart';
 
 class PositionRepositoryImpl implements PositionRepository {
   final GeolocatorPlatform geoLocator = GetIt.I();

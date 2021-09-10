@@ -18,7 +18,7 @@ class AskEnablePositionServiceDialog extends StatelessWidget {
           prev.isServiceEnabled != curr.isServiceEnabled && curr.isServiceEnabled,
       // Auto closing of the dialog when the service has been enabled
       listener: (context, state) => Navigator.of(context).pop(true),
-      child: AskOpenAppSettingsPageDialog(
+      child: const AskOpenAppSettingsPageDialog(
         title: Text('Enable the GeoLocalization service'),
       ),
     );
@@ -52,11 +52,11 @@ class OrderEnablePositionServiceDialog extends StatelessWidget {
         child: WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
-            title: title ?? Text('Position service required'),
+            title: title ?? const Text('Position service required'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: cancelLabel ?? Text('Cancel'),
+                child: cancelLabel ?? const Text('Cancel'),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -67,7 +67,7 @@ class OrderEnablePositionServiceDialog extends StatelessWidget {
                     if (!isOpened) lg.e('Open Settings app page failed!');
                   });
                 },
-                child: settingsLabel ?? Text('Open Settings'),
+                child: settingsLabel ?? const Text('Open Settings'),
               ),
             ],
           ),

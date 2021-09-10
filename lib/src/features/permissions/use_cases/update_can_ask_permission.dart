@@ -9,7 +9,7 @@ class UpdateCanAskPermissionParams extends Params {
   final Permission permission;
   final bool canAsk;
 
-  UpdateCanAskPermissionParams(this.permission, this.canAsk);
+  const UpdateCanAskPermissionParams(this.permission, this.canAsk);
 
   @override
   List<Object?> get props => [permission, canAsk];

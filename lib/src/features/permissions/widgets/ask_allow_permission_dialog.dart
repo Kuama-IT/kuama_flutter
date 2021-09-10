@@ -15,7 +15,7 @@ class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
   final Widget? notAllowLabel;
   final Widget? allowLabel;
 
-  ConfirmAllowPermissionsDialog({
+  const ConfirmAllowPermissionsDialog({
     Key? key,
     this.permissionBloc,
     this.title,
@@ -27,15 +27,15 @@ class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
     if (title != null) return title!;
     switch (state.permission) {
       case Permission.contacts:
-        return Text('Allow to access your contacts?');
+        return const Text('Allow to access your contacts?');
       case Permission.position:
-        return Text('Allow to access your location while you are using the app?');
+        return const Text('Allow to access your location while you are using the app?');
       case Permission.backgroundPosition:
-        return Text('Allow to access your location in background?');
+        return const Text('Allow to access your location in background?');
       case Permission.notification:
-        return Text('Allow to receive notifications');
+        return const Text('Allow to receive notifications');
       case Permission.camera:
-        return Text('Allow to access your camera?');
+        return const Text('Allow to access your camera?');
     }
   }
 
@@ -55,11 +55,11 @@ class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
           actions: [
             TextButton(
               onPressed: state.canRequest ? () => permissionBloc.confirmRequest(false) : null,
-              child: notAllowLabel ?? Text('Not allow'),
+              child: notAllowLabel ?? const Text('Not allow'),
             ),
             ElevatedButton(
               onPressed: state.canRequest ? () => permissionBloc.confirmRequest(true) : null,
-              child: allowLabel ?? Text('Allow'),
+              child: allowLabel ?? const Text('Allow'),
             ),
           ],
         );
@@ -115,17 +115,17 @@ class OrderAllowPermissionDialog<TPermissionBloc extends PermissionBloc> extends
         listener: (context, state) => Navigator.of(context).pop(true),
         builder: (context, state) {
           return AlertDialog(
-            title: title ?? Text('Position permission required'),
+            title: title ?? const Text('Position permission required'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: cancelLabel ?? Text('Cancel'),
+                child: cancelLabel ?? const Text('Cancel'),
               ),
               ElevatedButton(
                 onPressed: _delegateMainButtonPress(context, permissionBloc, state),
                 child: state.isPermanentlyDenied
-                    ? settingsLabel ?? Text('Settings')
-                    : allowLabel ?? Text('Allow'),
+                    ? settingsLabel ?? const Text('Settings')
+                    : allowLabel ?? const Text('Allow'),
               ),
             ],
           );

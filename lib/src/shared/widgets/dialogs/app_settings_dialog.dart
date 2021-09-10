@@ -28,15 +28,15 @@ class AskOpenAppSettingsPageDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: title ?? Text('Open app settings'),
+      title: title ?? const Text('Open app settings'),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: cancelLabel ?? Text('Cancel'),
+          child: cancelLabel ?? const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: openSettingsPage,
-          child: settingsLabel ?? Text('Settings'),
+          child: settingsLabel ?? const Text('Settings'),
         ),
       ],
     );

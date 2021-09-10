@@ -9,12 +9,12 @@ class Locker {
 
   Future<VoidCallback> lock() {
     final locker = Completer.sync();
-    final unLock = () {
+    void unLock() {
       if (identical(_last, locker.future)) {
         _last = null;
       }
       locker.complete();
-    };
+    }
 
     final previous = _last;
     _last = locker.future;

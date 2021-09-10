@@ -52,7 +52,7 @@ class _OrderPermissionAndServicePermissionBlocListenerState
       await _handleDialog(
         context,
         state,
-        (context) => OrderEnablePositionServiceDialog(),
+        (context) => const OrderEnablePositionServiceDialog(),
       );
       return;
     }

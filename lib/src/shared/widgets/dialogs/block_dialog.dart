@@ -49,7 +49,7 @@ class _BlockDialogState extends State<BlockDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    return const Dialog(
       child: CircularProgressIndicator(),
     );
   }
