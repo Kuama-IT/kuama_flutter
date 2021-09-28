@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/src/_utils/lg.dart';
-import 'package:kuama_flutter/src/features/app_pages/use_cases/open_settings_app_page.dart';
 import 'package:kuama_flutter/src/features/positioner/bloc/position_bloc.dart';
+import 'package:kuama_flutter/src/features/positioner/usecases/open_position_service_page.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
 import 'package:kuama_flutter/src/shared/widgets/change_handler.dart';
 import 'package:kuama_flutter/src/shared/widgets/dialogs/app_settings_dialog.dart';
@@ -52,7 +52,7 @@ class OrderEnablePositionServiceDialog extends StatelessWidget {
         child: WillPopScope(
           onWillPop: () async => false,
           child: AlertDialog(
-            title: title ?? const Text('Position service required'),
+            title: title ?? const Text('Please turn on the device position'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -60,11 +60,11 @@ class OrderEnablePositionServiceDialog extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final result = await GetIt.I<OpenSettingsAppPage>().call(NoParams());
+                  final result = await GetIt.I<OpenPositionServicePage>().call(NoParams());
                   result.fold((failure) {
-                    lg.e('Open Settings app page failed!', failure);
+                    lg.e('Open Location Settings page failed!', failure);
                   }, (isOpened) {
-                    if (!isOpened) lg.e('Open Settings app page failed!');
+                    if (!isOpened) lg.e('Open Location Settings page failed!');
                   });
                 },
                 child: settingsLabel ?? const Text('Open Settings'),
