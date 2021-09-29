@@ -2,13 +2,19 @@
 
 library kuama_flutter;
 
+export 'package:built_collection/built_collection.dart';
+export 'package:dartz/dartz.dart' show Either, Right, Left, right, left, Option, Some, None, Tuple2, Tuple3, Tuple4, Tuple5;
+export 'package:equatable/equatable.dart';
+export 'package:get_it/get_it.dart';
+export 'package:rxdart/rxdart.dart';
+
 export 'src/shared/feature_structure/entity.dart';
 export 'src/shared/feature_structure/failure.dart';
 export 'src/shared/feature_structure/fault.dart';
 export 'src/shared/feature_structure/repository.dart';
 export 'src/shared/feature_structure/use_case.dart';
-export 'src/shared/library_exports.dart';
 export 'src/shared/typedefs.dart';
+export 'src/shared/utils/built/date_time_serializer_plugin.dart';
 export 'src/shared/utils/debuggable.dart';
 export 'src/shared/utils/extensions.dart';
 export 'src/shared/utils/locker.dart';

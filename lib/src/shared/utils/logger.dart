@@ -135,7 +135,9 @@ class Logger {
         stackTrace: stackTrace ?? (error != null ? StackTrace.current : stackTrace),
       ));
     } catch (error, stackTrace) {
+      // ignore: avoid_print
       print(error);
+      // ignore: avoid_print
       print(stackTrace);
     }
   }

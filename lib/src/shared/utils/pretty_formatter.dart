@@ -18,6 +18,7 @@ class PrettyFormatter {
 
   void show(Map<String, Object> logs) {
     final lines = convertInLines(logs);
+    // ignore: avoid_print
     lines.forEach(print);
   }
 
