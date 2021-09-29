@@ -13,15 +13,13 @@ class AskEnablePositionServiceDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final OpenPositionServicePage openPositionServicePage = GetIt.I();
-
     return BlocListener<PositionBloc, PositionBlocState>(
       listenWhen: (prev, curr) =>
           prev.isServiceEnabled != curr.isServiceEnabled && curr.isServiceEnabled,
       // Auto closing of the dialog when the service has been enabled
       listener: (context, state) => Navigator.of(context).pop(true),
       child: AskOpenSettingsPageDialog(
-        openSettings: openPositionServicePage,
+        openSettings: GetIt.I<OpenPositionServicePage>(),
         title: const Text('Please turn on the device position'),
       ),
     );
