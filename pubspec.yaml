@@ -44,6 +44,8 @@ dependencies:
   flutter_bloc: ^7.2.0
 
 dev_dependencies:
+  flutter_lints: ^1.0.4
+
   flutter_test:
     sdk: flutter
   test: ^1.17.10
@@ -55,41 +57,48 @@ dev_dependencies:
   # flutter pub run build_runner watch --delete-conflicting-outputs
   # The version depends on the packages that use it
   build_runner: ^2.1.2
-  index_generator: ^2.0.3
-  flutter_lints: ^1.0.4
 
 flutter:
 
 
 # To generate index files: flutter pub run index_generator:main
 index_generator:
-  filters:
+  exclude:
+    # Ignore all generated dart files
+    - '**.g.dart'
     # Ignore all private folders or files
-    - black: .*\/_.*\/.*
-    - black: .*\/_.*.dart*
+    - '{_,**/_}*{/**,.dart}'
   indexes:
     - path: lib
       name: kuama_flutter
       library: kuama_flutter
-      export:
-        - src/shared
+      include:
+        - 'src/shared/**'
+      exports:
+        - package: built_collection/built_collection
+        - package: dartz/dartz
+          show: [Either, Right, Left, right, left, Option, Some, None, Tuple2, Tuple3, Tuple4, Tuple5]
+        - package: equatable/equatable
+        - package: get_it/get_it
+        - package: rxdart/rxdart
+
     - path: lib
       name: app_pages
       library: kuama_flutter_app_pages
-      export:
-        - src/features/app_pages
+      include:
+        - 'src/features/app_pages/**'
     - path: lib
       name: dio
       library: kuama_flutter_dio
-      export:
-        - src/features/dio
+      include:
+        - 'src/features/dio/**'
     - path: lib
       name: permissions
       library: kuama_flutter_permissions
-      export:
-        - src/features/permissions
+      include:
+        - 'src/features/permissions/**'
     - path: lib
       name: positioner
       library: kuama_flutter_positioner
-      export:
-        - src/features/positioner
+      include:
+        - 'src/features/positioner/**'

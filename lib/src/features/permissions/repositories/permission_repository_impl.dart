@@ -1,7 +1,7 @@
+import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/permissions/entities/permission.dart';
 import 'package:kuama_flutter/src/features/permissions/repositories/permission_repository.dart';
-import 'package:kuama_flutter/src/shared/library_exports.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart'
     as ph;
 import 'package:synchronized/synchronized.dart';
