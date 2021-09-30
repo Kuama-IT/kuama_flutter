@@ -50,18 +50,24 @@ class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
         Navigator.of(context).pop(state.status.isGranted);
       },
       builder: (context, state) {
-        return AlertDialog(
-          title: _buildTitle(context, state),
-          actions: [
-            TextButton(
-              onPressed: state.canRequest ? () => permissionBloc.confirmRequest(false) : null,
-              child: notAllowLabel ?? const Text('Not allow'),
-            ),
-            ElevatedButton(
-              onPressed: state.canRequest ? () => permissionBloc.confirmRequest(true) : null,
-              child: allowLabel ?? const Text('Allow'),
-            ),
-          ],
+        // The result of the dialog is returned instantly.
+        // So while the dialog is being closed, the listener captures the bloc change
+        // and tries to close the dialog again, which has already been closed.
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            title: _buildTitle(context, state),
+            actions: [
+              TextButton(
+                onPressed: state.canRequest ? () => permissionBloc.confirmRequest(false) : null,
+                child: notAllowLabel ?? const Text('Not allow'),
+              ),
+              ElevatedButton(
+                onPressed: state.canRequest ? () => permissionBloc.confirmRequest(true) : null,
+                child: allowLabel ?? const Text('Allow'),
+              ),
+            ],
+          ),
         );
       },
     );
