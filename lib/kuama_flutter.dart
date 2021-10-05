@@ -3,7 +3,7 @@
 library kuama_flutter;
 
 export 'package:built_collection/built_collection.dart';
-export 'package:dartz/dartz.dart' show Either, Right, Left, right, left, Option, Some, None, Tuple2, Tuple3, Tuple4, Tuple5;
+export 'package:dartz/dartz.dart' show Either, Right, Left, right, left, Option, Some, None, Tuple2, Tuple3, Tuple4, Tuple5, tuple2, tuple3, tuple4, tuple5;
 export 'package:equatable/equatable.dart';
 export 'package:get_it/get_it.dart';
 export 'package:rxdart/rxdart.dart';

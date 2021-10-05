@@ -77,7 +77,7 @@ index_generator:
       exports:
         - package: built_collection/built_collection
         - package: dartz/dartz
-          show: [Either, Right, Left, right, left, Option, Some, None, Tuple2, Tuple3, Tuple4, Tuple5]
+          show: [Either, Right, Left, right, left, Option, Some, None, Tuple2, Tuple3, Tuple4, Tuple5, tuple2, tuple3, tuple4, tuple5]
         - package: equatable/equatable
         - package: get_it/get_it
         - package: rxdart/rxdart
