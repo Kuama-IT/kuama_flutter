@@ -9,8 +9,8 @@ import 'package:kuama_flutter/src/features/positioner/usecases/check_position_se
 import 'package:kuama_flutter/src/features/positioner/usecases/get_current_position.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/on_position_changes.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/on_service_changes.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/failure.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/failures/dart_failures.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/use_case/params.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 import 'package:rxdart/rxdart.dart';
 

@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/positioner/bloc/position_bloc.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/open_position_service_page.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/use_case/params.dart';
 import 'package:kuama_flutter/src/shared/widgets/change_handler.dart';
 import 'package:kuama_flutter/src/shared/widgets/dialogs/app_settings_dialog.dart';
 

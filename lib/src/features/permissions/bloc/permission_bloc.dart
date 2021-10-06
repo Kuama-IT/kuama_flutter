@@ -8,7 +8,7 @@ import 'package:kuama_flutter/src/features/permissions/use_cases/can_ask_permiss
 import 'package:kuama_flutter/src/features/permissions/use_cases/check_permission.dart';
 import 'package:kuama_flutter/src/features/permissions/use_cases/request_permission.dart';
 import 'package:kuama_flutter/src/features/permissions/use_cases/update_can_ask_permission.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/failure.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/failures/dart_failures.dart';
 
 part '_permission_event.dart';
 part '_permission_state.dart';
