@@ -9,10 +9,13 @@ export 'package:get_it/get_it.dart';
 export 'package:rxdart/rxdart.dart';
 
 export 'src/shared/feature_structure/entity.dart';
-export 'src/shared/feature_structure/failure.dart';
+export 'src/shared/feature_structure/failures/dart_failures.dart';
+export 'src/shared/feature_structure/failures/flutter_failures.dart';
 export 'src/shared/feature_structure/fault.dart';
 export 'src/shared/feature_structure/repository.dart';
-export 'src/shared/feature_structure/use_case.dart';
+export 'src/shared/feature_structure/use_case/params.dart';
+export 'src/shared/feature_structure/use_case/use_case.dart';
+export 'src/shared/feature_structure/use_case/use_case_observer.dart';
 export 'src/shared/typedefs.dart';
 export 'src/shared/utils/built/date_time_serializer_plugin.dart';
 export 'src/shared/utils/debuggable.dart';
