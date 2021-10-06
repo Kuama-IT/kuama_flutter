@@ -1,76 +1,67 @@
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/services.dart';
-import 'package:kuama_flutter/src/_utils/lg.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/failure.dart';
-import 'package:kuama_flutter/src/shared/utils/debuggable.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/failures/dart_failures.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/use_case/use_case_observer.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class Params extends Equatable {
-  const Params();
+class UnhandledUseCaseError {
+  final UseCaseBase<dynamic, dynamic> useCase;
+  final dynamic params;
+  final Object error;
+  final StackTrace stackTrace;
+
+  UnhandledUseCaseError(this.useCase, this.params, this.error, this.stackTrace);
 
   @override
-  bool? get stringify => true;
+  String toString() =>
+      'The use case (${useCase}) failed to complete the job due to an unexpected error\n$params\n$error\n$stackTrace';
 }
 
-class NoParams extends Params {
-  const NoParams._();
-
-  static const _instance = NoParams._();
-
-  factory NoParams() => _instance;
-
-  @override
-  final List<Object?> props = const <Object?>[];
-}
-
-@Deprecated('In favour of [Params]')
-abstract class ParamsBase extends Params {
-  const ParamsBase(this.props);
-
-  @override
-  bool? get stringify => true;
-
-  @override
-  final List<Object?> props;
-}
+/// Recover a use case that has failed by transforming it into failure
+typedef UseCaseHealer = Failure? Function(
+    UseCaseBase useCase, dynamic params, Object error, StackTrace stackTrace);
 
 abstract class UseCaseBase<TParams, TResult> {
-  TResult call(TParams params);
+  /// Listen all the errors and failures that are emitted by any use case
+  static UseCaseObserver observer = const UseCaseObserver();
 
-  @visibleForOverriding
-  Failure onMapErrorToFailure(TParams params, Object error, StackTrace stackTrace) {
-    if (error is DioError) {
-      return HttpClientFailure(error: error, stackTrace: stackTrace);
-    }
-    if (error is PlatformException) {
-      return PlatformFailure(error: error, stackTrace: stackTrace);
-    }
+  /// You can catch use case exceptions and convert them to failure
+  static UseCaseHealer healer = defaultHealer;
 
-    return UnhandledFailure(error, stackTrace);
+  static Failure? defaultHealer(
+      UseCaseBase useCase, dynamic params, Object error, StackTrace stackTrace) {
+    return null;
   }
+
+  TResult call(TParams params);
 
   @protected
   Failure mapErrorToFailure(TParams params, Object error, StackTrace stackTrace) {
     if (error is Failure) {
-      lg.w(Debuggable({'UseCaseFailure($runtimeType)': params}), error, stackTrace);
+      observer.onFailure(this, params, error, stackTrace);
       return error;
     }
 
-    final failure = onMapErrorToFailure(params, error, stackTrace);
-    lg.w(Debuggable({'UseCaseError($runtimeType)': params}), failure, stackTrace);
+    observer.onError(this, params, error, stackTrace);
+    final failure = healer(this, params, error, stackTrace);
+    if (failure == null) throw UnhandledUseCaseError(this, params, error, stackTrace);
     return failure;
   }
+
+  @override
+  String toString() => '$runtimeType';
 }
 
 abstract class UseCase<TParams, TResult>
     extends UseCaseBase<TParams, Future<Either<Failure, TResult>>> {
   @override
   Future<Either<Failure, TResult>> call(TParams params) async {
+    UseCaseBase.observer.onCall(this, params);
     try {
-      return await tryCall(params);
+      final result = await tryCall(params);
+      UseCaseBase.observer.onResult(this, params, result);
+      return result;
     } catch (error, stackTrace) {
       return Left(mapErrorToFailure(params, error, stackTrace));
     }

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/app_pages/use_cases/open_settings_app_page.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/use_case/params.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/use_case/use_case.dart';
 
 class AskOpenSettingsPageDialog extends StatelessWidget {
   final UseCase<NoParams, bool>? openSettings;

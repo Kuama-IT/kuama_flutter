@@ -5,7 +5,7 @@ import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/app_pages/use_cases/open_settings_app_page.dart';
 import 'package:kuama_flutter/src/features/permissions/bloc/permission_bloc.dart';
 import 'package:kuama_flutter/src/features/permissions/entities/permission.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/use_case.dart';
+import 'package:kuama_flutter/src/shared/feature_structure/use_case/params.dart';
 
 /// Confirm the permit request
 class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
