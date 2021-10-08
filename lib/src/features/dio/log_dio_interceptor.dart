@@ -54,7 +54,7 @@ class LogDioInterceptor with Interceptor {
   void onError(DioError err, ErrorInterceptorHandler handler) {
     if (canLogError) {
       _logError({
-        'DioError(${err.type})': err.message,
+        'DioError(${err.type}|${err.requestOptions.method}:${err.requestOptions.uri})': err.message,
         if (err.response != null) ..._mapResponse(err.response!),
         if (err is Error) 'DioErrorStackTrace': (err as Error).stackTrace,
       });
@@ -74,8 +74,7 @@ class LogDioInterceptor with Interceptor {
 
   Map<String, dynamic> _mapResponse(Response response) {
     return {
-      'DioResponse(${response.requestOptions.method}|${response.statusCode}): ${response.requestOptions.uri}':
-          _mapData(response.data),
+      'DioResponse(${response.statusCode})': _mapData(response.data),
       if (canLogHeaders) 'Headers': _mapHeaders(response.headers.map),
     };
   }
