@@ -35,7 +35,7 @@ class LogDioInterceptor with Interceptor {
     if (canLogRequest) {
       final request = options;
       _logRequest({
-        'DioRequest(${request.method}): ${request.uri}': _mapData(request.data),
+        'DioRequest(${_mergeMethodUri(request)})': _mapData(request.data),
         if (canLogHeaders) 'Headers': request.headers,
       });
     }
@@ -54,7 +54,7 @@ class LogDioInterceptor with Interceptor {
   void onError(DioError err, ErrorInterceptorHandler handler) {
     if (canLogError) {
       _logError({
-        'DioError(${err.type}|${err.requestOptions.method}:${err.requestOptions.uri})': err.message,
+        'DioError(${err.type}|${_mergeMethodUri(err.requestOptions)})': err.message,
         if (err.response != null) ..._mapResponse(err.response!),
         if (err is Error) 'DioErrorStackTrace': (err as Error).stackTrace,
       });
@@ -73,9 +73,14 @@ class LogDioInterceptor with Interceptor {
   }
 
   Map<String, dynamic> _mapResponse(Response response) {
+    final request = response.requestOptions;
     return {
-      'DioResponse(${response.statusCode})': _mapData(response.data),
+      'DioResponse(${response.statusCode}|${_mergeMethodUri(request)})': _mapData(response.data),
       if (canLogHeaders) 'Headers': _mapHeaders(response.headers.map),
     };
+  }
+
+  String _mergeMethodUri(RequestOptions request) {
+    return '${request.method}:${request.uri}';
   }
 }
