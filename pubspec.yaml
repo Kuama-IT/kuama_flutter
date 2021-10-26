@@ -22,7 +22,7 @@ dependencies:
 
 ## Data extensions
   meta:
-  pure_extensions: ^3.4.0
+  pure_extensions: ^4.0.0
   rxdart: ^0.27.0
 
 ## Primitive data

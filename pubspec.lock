@@ -484,7 +484,7 @@ packages:
       name: pure_extensions
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.0"
+    version: "4.0.0"
   rational:
     dependency: transitive
     description:
@@ -492,6 +492,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
+  recase:
+    dependency: transitive
+    description:
+      name: recase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   remove_from_coverage:
     dependency: "direct dev"
     description:
@@ -505,7 +512,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.1"
+    version: "0.27.2"
   shared_preferences:
     dependency: "direct main"
     description:
