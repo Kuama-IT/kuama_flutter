@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/kuama_flutter.dart';
 import 'package:kuama_flutter/src/features/positioner/repositories/position_repository.dart';
@@ -11,8 +10,8 @@ class OnPositionChanges extends StreamUseCase<NoParams, GeoPoint> {
   final PositionRepository locatorRepo = GetIt.I();
 
   @override
-  Stream<Either<Failure, GeoPoint>> tryCall(NoParams params) {
-    return locatorRepo.onPositionChanges.toRight();
+  Stream<GeoPoint> onCall(NoParams params) {
+    return locatorRepo.onPositionChanges;
   }
 }
 

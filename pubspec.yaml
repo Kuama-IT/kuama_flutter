@@ -26,7 +26,7 @@ dependencies:
   rxdart: ^0.27.0
 
 ## Primitive data
-  dartz: ^0.10.0
+  tuple: ^2.0.0
   built_value: ^8.1.0
   built_collection: ^5.1.0
   equatable: ^2.0.0
@@ -48,8 +48,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   test: ^1.17.10
-  mockito: ^5.0.15
-  remove_from_coverage: ^2.0.0
+  mocktail: ^0.2.0
 
   # To generate .g files:
   # flutter pub run build_runner build --delete-conflicting-outputs
@@ -75,8 +74,8 @@ index_generator:
         - 'src/shared/**'
       exports:
         - package: built_collection/built_collection
-        - package: dartz/dartz
-          show: [Either, Right, Left, right, left, Option, Some, None, Tuple2, Tuple3, Tuple4, Tuple5, tuple2, tuple3, tuple4, tuple5]
+        - package: tuple/tuple
+          show: [Tuple2, Tuple3, Tuple4, Tuple5]
         - package: equatable/equatable
         - package: get_it/get_it
         - package: rxdart/rxdart

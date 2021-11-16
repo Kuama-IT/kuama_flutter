@@ -13,13 +13,8 @@ Future<void> showPositionServiceDialog({
 
   switch (theme.platform) {
     case TargetPlatform.android:
-      final res = await GetIt.I<OpenPositionServicePage>().call(NoParams());
-      res.fold((failure) {
-        lg.e('The page to enable the position service could not be opened', failure);
-      }, (wasOpened) {
-        // TODO: open a dialog
-        if (!wasOpened) lg.e('The page to enable the position service could not be opened');
-      });
+      final wasOpened = await GetIt.I<OpenPositionServicePage>().call(NoParams());
+      if (!wasOpened) lg.e('The page to enable the position service could not be opened');
       break;
     case TargetPlatform.fuchsia:
     case TargetPlatform.iOS:

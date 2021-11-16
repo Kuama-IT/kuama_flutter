@@ -3,10 +3,10 @@
 library kuama_flutter;
 
 export 'package:built_collection/built_collection.dart';
-export 'package:dartz/dartz.dart' show Either, Right, Left, right, left, Option, Some, None, Tuple2, Tuple3, Tuple4, Tuple5, tuple2, tuple3, tuple4, tuple5;
 export 'package:equatable/equatable.dart';
 export 'package:get_it/get_it.dart';
 export 'package:rxdart/rxdart.dart';
+export 'package:tuple/tuple.dart' show Tuple2, Tuple3, Tuple4, Tuple5;
 
 export 'src/shared/feature_structure/entity.dart';
 export 'src/shared/feature_structure/failures/dart_failures.dart';
@@ -24,6 +24,7 @@ export 'src/shared/utils/locker.dart';
 export 'src/shared/utils/log_output.dart';
 export 'src/shared/utils/logger.dart';
 export 'src/shared/utils/pretty_formatter.dart';
+export 'src/shared/utils/tuple.dart';
 export 'src/shared/widgets/animations/dots_text.dart';
 export 'src/shared/widgets/change_handler.dart';
 export 'src/shared/widgets/deferred_provider/deferred_data.dart';

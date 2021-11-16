@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
-import 'package:kuama_flutter/src/_utils/lg.dart';
+import 'package:kuama_flutter/kuama_flutter.dart';
 import 'package:kuama_flutter/src/features/permissions/bloc/permission_bloc.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/check_position_service.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/get_current_position.dart';
@@ -93,13 +93,8 @@ class PositionBloc extends Bloc<PositionBlocEvent, PositionBlocState> {
     Rx.concatEager([
       _checkService.call(NoParams()).asStream(),
       _onServiceChanges.call(NoParams()),
-    ]).listen((res) {
-      res.fold((failure) {
-        // Todo: emit failure
-        lg.e('Error on PositionerBloc $failure');
-      }, (isServiceEnabled) {
-        add(_ServiceUpdatePositionBloc(isServiceEnabled));
-      });
+    ]).listen((isServiceEnabled) {
+      add(_ServiceUpdatePositionBloc(isServiceEnabled));
     }).addTo(_serviceSubs);
   }
 
@@ -170,12 +165,12 @@ class PositionBloc extends Bloc<PositionBlocEvent, PositionBlocState> {
     if (_realTimeListenerCount <= 0) {
       yield state.toLocating(isRealTime: false);
 
-      final res = await _getCurrentLocation.call(NoParams());
-      yield res.fold((failure) {
-        return state.toFailed(failure: failure);
-      }, (position) {
-        return state.toLocated(isRealTime: false, currentPosition: position);
-      });
+      try {
+        final position = await _getCurrentLocation.call(NoParams());
+        yield state.toLocated(isRealTime: false, currentPosition: position);
+      } on Failure catch (failure) {
+        yield state.toFailed(failure: failure);
+      }
       return;
     }
   }
@@ -185,13 +180,14 @@ class PositionBloc extends Bloc<PositionBlocEvent, PositionBlocState> {
     Rx.concatEager([
       _getCurrentLocation.call(NoParams()).asStream(),
       _onPositionChanges.call(NoParams()),
-    ]).listen((res) {
-      final nextState = res.fold((failure) {
-        return state.toFailed(failure: failure);
-      }, (position) {
-        return state.toLocated(isRealTime: true, currentPosition: position);
-      });
-      add(_PositionUpdatePositionBloc(nextState));
+    ]).onFailureResume((failure) {
+      add(_PositionUpdatePositionBloc(state.toFailed(failure: failure)));
+      return const Stream.empty();
+    }).listen((position) {
+      add(_PositionUpdatePositionBloc(state.toLocated(
+        isRealTime: true,
+        currentPosition: position,
+      )));
     }).addTo(_positionSubs);
   }
 

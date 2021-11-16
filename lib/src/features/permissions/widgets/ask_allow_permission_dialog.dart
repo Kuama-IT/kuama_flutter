@@ -96,12 +96,8 @@ class OrderAllowPermissionDialog<TPermissionBloc extends PermissionBloc> extends
       BuildContext context, PermissionBloc permissionBloc, PermissionBlocState state) {
     if (state.isPermanentlyDenied) {
       return () async {
-        final result = await GetIt.I<OpenSettingsAppPage>().call(NoParams());
-        result.fold((failure) {
-          lg.e('Open Settings app page failed!', failure);
-        }, (isOpened) {
-          if (!isOpened) lg.e('Open Settings app page failed!');
-        });
+        final isOpened = await GetIt.I<OpenSettingsAppPage>().call(NoParams());
+        if (!isOpened) lg.e('Open Settings app page failed!');
       };
     }
     if (state.canForceRequest) {

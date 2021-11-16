@@ -41,13 +41,11 @@ void main() async {
 
     if (line == 'read') {
       // Never call onCall when calling a use case
-      final notesRes = await readNotesUC.call(NoParams());
+      final notes = await readNotesUC.call(NoParams());
 
-      if (notesRes.isRight()) {
-        print(notesRes.right.map((note) {
-          return 'Created at: ${note.createdAt}\n${note.text}';
-        }).join('\n'));
-      }
+      print(notes.map((note) {
+        return 'Created at: ${note.createdAt}\n${note.text}';
+      }).join('\n'));
     }
   }
 }

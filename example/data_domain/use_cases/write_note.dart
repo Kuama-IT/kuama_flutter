@@ -1,6 +1,4 @@
-import 'package:dartz/dartz.dart';
 import 'package:get_it/get_it.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/failures/dart_failures.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case/params.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case/use_case.dart';
 
@@ -24,9 +22,7 @@ class WriteNote extends UseCase<WriteNoteParams, NoteEntity> {
 
   // Manage the logic in the use case
   @override
-  Future<Either<Failure, NoteEntity>> tryCall(WriteNoteParams params) async {
-    final note = _notesRepository.create(params.text, DateTime.now());
-
-    return Right(note);
+  Future<NoteEntity> onCall(WriteNoteParams params) async {
+    return _notesRepository.create(params.text, DateTime.now());
   }
 }

@@ -113,13 +113,10 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
   /// NB: If it fails or succeeds with a wrong outcome, the bloc is not affected by the malfunction
   /// TODO: It continues with the correct functioning even in case of success with wrong response
   Future<void> _callUpdateCanAsk(bool canAsk) async {
-    final res = await _updateCanAsk.call(UpdateCanAskPermissionParams(state.permission, canAsk));
-    res.fold((failure) {
-      // Todo: Show failure
-      lg.e(failure);
-    }, (canAsk) {
-      lg.i('Update can ask permission: $canAsk');
-    });
+    final _canAsk =
+        await _updateCanAsk.call(UpdateCanAskPermissionParams(state.permission, canAsk));
+    // Todo: Show failure
+    lg.i('Update can ask permission: $_canAsk');
   }
 
   /// Update the state of the bloc based on the status of the permission (canAsk, status)
@@ -132,36 +129,37 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
   /// In other cases, [PermissionBlocRequested] will be issued with the status of the permit
   /// or [PermissionBlocRequestFailed] if the request for the permit fails
   Stream<PermissionBlocState> _mapRequest(_RequestType type) async* {
-    final canRequireRes = await _canAsk.call(state.permission);
+    try {
+      final canRequest = await _canAsk.call(state.permission);
 
-    yield await canRequireRes.fold((failure) {
-      return state.toRequestFailed(failure: failure);
-    }, (canRequest) async {
       if (!canRequest) {
-        return state.toRequested(status: PermissionStatus.denied);
+        yield state.toRequested(status: PermissionStatus.denied);
+        return;
       }
 
-      final statusRes = await (type.isRequest ? _request : _check).call(state.permission);
+      final status = await (type.isRequest ? _request : _check).call(state.permission);
 
-      return statusRes.fold((failure) {
-        return state.toRequestFailed(failure: failure);
-      }, (status) {
-        switch (status) {
-          case PermissionStatus.denied:
-            switch (type) {
-              case _RequestType.load:
-                return state.toLoaded();
-              case _RequestType.confirm:
-                return state.toRequestConfirm();
-              case _RequestType.request:
-                return state.toRequested(status: status);
-            }
-          case PermissionStatus.permanentlyDenied:
-          case PermissionStatus.granted:
-            return state.toRequested(status: status);
-        }
-      });
-    });
+      switch (status) {
+        case PermissionStatus.denied:
+          switch (type) {
+            case _RequestType.load:
+              yield state.toLoaded();
+              return;
+            case _RequestType.confirm:
+              yield state.toRequestConfirm();
+              return;
+            case _RequestType.request:
+              yield state.toRequested(status: status);
+              return;
+          }
+        case PermissionStatus.permanentlyDenied:
+        case PermissionStatus.granted:
+          yield state.toRequested(status: status);
+          return;
+      }
+    } on Failure catch (failure) {
+      yield state.toRequestFailed(failure: failure);
+    }
   }
 }
 
