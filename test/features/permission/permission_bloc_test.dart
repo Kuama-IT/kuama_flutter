@@ -1,23 +1,25 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/permissions.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
-import 'permission_bloc_test.mocks.dart';
+import '../../utils.dart';
 
-@GenerateMocks([
-  CanAskPermission,
-  UpdateCanAskPermission,
-  CheckPermission,
-  RequestPermission,
-])
+class _MockCanAskPermission extends Mock implements CanAskPermission {}
+
+class _MockUpdateCanAskPermission extends Mock implements UpdateCanAskPermission {}
+
+class _MockCheckPermission extends Mock implements CheckPermission {}
+
+class _MockRequestPermission extends Mock implements RequestPermission {}
+
+class _FakeUpdateCanAskPermissionParams extends Fake implements UpdateCanAskPermissionParams {}
+
 void main() {
-  late MockCanAskPermission mockCanAsk;
-  late MockUpdateCanAskPermission mockUpdateCanAsk;
-  late MockCheckPermission mockCheck;
-  late MockRequestPermission mockRequest;
+  late _MockCanAskPermission mockCanAsk;
+  late _MockUpdateCanAskPermission mockUpdateCanAsk;
+  late _MockCheckPermission mockCheck;
+  late _MockRequestPermission mockRequest;
 
   late PermissionBloc bloc;
 
@@ -26,10 +28,14 @@ void main() {
   setUp(() {
     GetIt.instance
       ..reset()
-      ..registerSingleton<CanAskPermission>(mockCanAsk = MockCanAskPermission())
-      ..registerSingleton<UpdateCanAskPermission>(mockUpdateCanAsk = MockUpdateCanAskPermission())
-      ..registerSingleton<CheckPermission>(mockCheck = MockCheckPermission())
-      ..registerSingleton<RequestPermission>(mockRequest = MockRequestPermission());
+      ..registerSingleton<CanAskPermission>(mockCanAsk = _MockCanAskPermission())
+      ..registerSingleton<UpdateCanAskPermission>(mockUpdateCanAsk = _MockUpdateCanAskPermission())
+      ..registerSingleton<CheckPermission>(mockCheck = _MockCheckPermission())
+      ..registerSingleton<RequestPermission>(mockRequest = _MockRequestPermission());
+
+    fallbackValues
+      ..registerEnum(Permission.values)
+      ..register(_FakeUpdateCanAskPermissionParams());
 
     PermissionBloc.isTesting = true;
     bloc = ContactsPermissionBloc();
@@ -38,9 +44,9 @@ void main() {
   group('Test PermissionBloc', () {
     group('Load', () {
       test('Load->ConfirmNegated', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          return const Right(false);
+          return false;
         });
 
         bloc.load();
@@ -60,12 +66,12 @@ void main() {
       });
 
       test('Load->PermissionPermanentlyDenied', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          return const Right(true);
+          return true;
         });
-        when(mockCheck.call(any)).thenAnswer((_) async {
-          return const Right(PermissionStatus.permanentlyDenied);
+        when(() => mockCheck.call(any())).thenAnswer((_) async {
+          return PermissionStatus.permanentlyDenied;
         });
 
         bloc.load();
@@ -85,12 +91,12 @@ void main() {
       });
 
       test('Load->PermissionDenied', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          return const Right(true);
+          return true;
         });
-        when(mockCheck.call(any)).thenAnswer((_) async {
-          return const Right(PermissionStatus.denied);
+        when(() => mockCheck.call(any())).thenAnswer((_) async {
+          return PermissionStatus.denied;
         });
 
         bloc.load();
@@ -109,12 +115,12 @@ void main() {
       });
 
       test('Load->PermissionGranted', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          return const Right(true);
+          return true;
         });
-        when(mockCheck.call(any)).thenAnswer((_) async {
-          return const Right(PermissionStatus.granted);
+        when(() => mockCheck.call(any())).thenAnswer((_) async {
+          return PermissionStatus.granted;
         });
 
         bloc.load();
@@ -136,9 +142,9 @@ void main() {
 
     group('Request', () {
       test('Request->RequireNegated->PermissionDenied', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
           await Future.delayed(const Duration());
-          return const Right(false);
+          return false;
         });
 
         bloc.request();
@@ -158,11 +164,11 @@ void main() {
       });
 
       test('Request->RequireGranted->PermissionDenied', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
-          return const Right(true);
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
+          return true;
         });
-        when(mockCheck.call(any)).thenAnswer((_) async {
-          return const Right(PermissionStatus.denied);
+        when(() => mockCheck.call(any())).thenAnswer((_) async {
+          return PermissionStatus.denied;
         });
 
         bloc.request();
@@ -181,11 +187,11 @@ void main() {
       });
 
       test('Request->RequireGranted->PermissionGranted', () async {
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
-          return const Right(true);
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
+          return true;
         });
-        when(mockCheck.call(any)).thenAnswer((_) async {
-          return const Right(PermissionStatus.granted);
+        when(() => mockCheck.call(any())).thenAnswer((_) async {
+          return PermissionStatus.granted;
         });
 
         bloc.request();
@@ -211,11 +217,11 @@ void main() {
           permission: Permission.contacts,
         ));
 
-        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async {
-          return const Right(false);
+        when(() => mockUpdateCanAsk.call(any())).thenAnswer((_) async {
+          return false;
         });
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
-          return const Right(false);
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
+          return false;
         });
 
         bloc.confirmRequest(false);
@@ -239,14 +245,14 @@ void main() {
           permission: Permission.contacts,
         ));
 
-        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async {
-          return const Right(true);
+        when(() => mockUpdateCanAsk.call(any())).thenAnswer((_) async {
+          return true;
         });
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
-          return const Right(true);
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
+          return true;
         });
-        when(mockRequest.call(any)).thenAnswer((_) async {
-          return const Right(PermissionStatus.denied);
+        when(() => mockRequest.call(any())).thenAnswer((_) async {
+          return PermissionStatus.denied;
         });
 
         bloc.confirmRequest(true);
@@ -270,14 +276,14 @@ void main() {
           permission: Permission.contacts,
         ));
 
-        when(mockUpdateCanAsk.call(any)).thenAnswer((_) async {
-          return const Right(true);
+        when(() => mockUpdateCanAsk.call(any())).thenAnswer((_) async {
+          return true;
         });
-        when(mockCanAsk.call(any)).thenAnswer((_) async {
-          return const Right(true);
+        when(() => mockCanAsk.call(any())).thenAnswer((_) async {
+          return true;
         });
-        when(mockRequest.call(any)).thenAnswer((_) async {
-          return const Right(PermissionStatus.granted);
+        when(() => mockRequest.call(any())).thenAnswer((_) async {
+          return PermissionStatus.granted;
         });
 
         bloc.confirmRequest(true);

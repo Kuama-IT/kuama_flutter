@@ -1,4 +1,5 @@
-import 'package:dartz/dartz.dart';
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/failures/dart_failures.dart';
 import 'package:kuama_flutter/src/shared/feature_structure/use_case/use_case_observer.dart';
@@ -53,49 +54,55 @@ abstract class UseCaseBase<TParams, TResult> {
   String toString() => '$runtimeType';
 }
 
-abstract class UseCase<TParams, TResult>
-    extends UseCaseBase<TParams, Future<Either<Failure, TResult>>> {
+abstract class UseCase<TParams, TResult> extends UseCaseBase<TParams, Future<TResult>> {
   @override
-  Future<Either<Failure, TResult>> call(TParams params) async {
+  Future<TResult> call(TParams params) async {
     UseCaseBase.observer.onCall(this, params);
     try {
-      final result = await tryCall(params);
+      final result = await onCall(params);
       UseCaseBase.observer.onResult(this, params, result);
       return result;
+    } on Failure catch (failure, stackTrace) {
+      UseCaseBase.observer.onFailure(this, params, failure, stackTrace);
+      rethrow;
     } catch (error, stackTrace) {
-      return Left(mapErrorToFailure(params, error, stackTrace));
+      final failure = mapErrorToFailure(params, error, stackTrace);
+      throw failure;
     }
   }
 
   @visibleForTesting
   @visibleForOverriding
-  Future<Either<Failure, TResult>> tryCall(TParams params);
+  Future<TResult> onCall(TParams params);
 }
 
-abstract class StreamUseCase<TParams, TResult>
-    extends UseCaseBase<TParams, Stream<Either<Failure, TResult>>> {
+abstract class StreamUseCase<TParams, TResult> extends UseCaseBase<TParams, Stream<TResult>> {
   @override
-  Stream<Either<Failure, TResult>> call(TParams params) {
-    return tryCall(params).onErrorReturnWith((error, stackTrace) {
-      return Left(mapErrorToFailure(params, error, stackTrace));
+  Stream<TResult> call(TParams params) {
+    return onCall(params).onErrorResume((error, stackTrace) {
+      if (error is Failure) {
+        return Stream.error(error, stackTrace);
+      }
+      final failure = mapErrorToFailure(params, error, stackTrace);
+      return Stream.error(failure, stackTrace);
     });
   }
 
   @visibleForTesting
   @visibleForOverriding
-  Stream<Either<Failure, TResult>> tryCall(TParams params);
+  Stream<TResult> onCall(TParams params);
 }
 
 class ProgressSnapshot<TResult> extends Equatable {
   final double progress;
-  final Either<Failure, TResult>? _result;
+  final TResult? _result;
 
   bool get hasResult => _result != null;
-  Either<Failure, TResult> get result => _result!;
+  TResult get result => _result!;
 
   const ProgressSnapshot({
     required this.progress,
-    Either<Failure, TResult>? result,
+    TResult? result,
   }) : _result = result;
 
   @override
@@ -109,34 +116,34 @@ abstract class ProgressUseCase<TParams, TResult>
     extends UseCaseBase<TParams, Stream<ProgressSnapshot<TResult>>> {
   @override
   Stream<ProgressSnapshot<TResult>> call(TParams params) {
-    return tryCall(params).onErrorReturnWith((error, stackTrace) {
-      return ProgressSnapshot(
-        progress: 1.0,
-        result: Left(mapErrorToFailure(params, error, stackTrace)),
-      );
-    });
+    return onCall(params);
   }
 
   @visibleForTesting
   @visibleForOverriding
-  Stream<ProgressSnapshot<TResult>> tryCall(TParams params);
+  Stream<ProgressSnapshot<TResult>> onCall(TParams params);
 }
 
-extension EitherValueExtensions<TLeft, TRight> on Either<TLeft, TRight> {
-  TLeft get left => fold((l) => l, (r) => throw 'Not has left value');
-  TRight get right => fold((l) => throw 'Not has right value', (r) => r);
+extension StreamFailureExtension<T> on Stream<T> {
+  Stream<T> onFailureResume(Stream<T> Function(Failure failure) onFailure) {
+    return onErrorResume((error, stackTrace) {
+      if (error is Failure) {
+        return onFailure(error);
+      }
+      return Stream.error(error, stackTrace);
+    });
+  }
 }
 
-/// Converts the current value<T> of the Future to Right<T> or Left<T>
-extension EitherFutureExtensions<T> on Future<T> {
-  Future<Either<TLeft, T>> toRight<TLeft>() => then(right);
-
-  Future<Either<T, TRight>> toLeft<TRight>() => then(left);
-}
-
-/// Converts the current value<T> of the Stream to Right<T> or Left<T>
-extension EitherStreamExtensions<T> on Stream<T> {
-  Stream<Either<TLeft, T>> toRight<TLeft>() => map(right);
-
-  Stream<Either<T, TRight>> toLeft<TRight>() => map(left);
+extension StreamSubscriptionExtension<T> on StreamSubscription<T> {
+  StreamSubscription<T> onFailure(FutureOr<bool?> Function(Failure failure) onFailure) {
+    onError((error, stackTrace) {
+      if (error is Failure) {
+        final res = onFailure(error);
+        if (res != false) return;
+      }
+      Zone.current.handleUncaughtError(error, stackTrace);
+    });
+    return this;
+  }
 }

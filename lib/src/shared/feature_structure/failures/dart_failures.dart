@@ -3,7 +3,6 @@ import 'package:kuama_flutter/src/shared/utils/debuggable.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class Failure with Debuggable {
-  final StackTrace stackTrace = StackTrace.current;
   final ErrorAndStackTrace? error;
 
   Failure({this.error});
@@ -26,7 +25,6 @@ abstract class Failure with Debuggable {
       ...toLogMessages(),
       if (e != null) ...(e is Debuggable ? e.collectDebugInfo() : {'Fault': e}),
       if (st != null) 'FaultStackTrace': st,
-      'FailureStackTrace': stackTrace,
     };
   }
 
@@ -43,7 +41,6 @@ abstract class Failure with Debuggable {
     final buffer = StringBuffer('Failure($runtimeType): ${message}');
     if (e != null) buffer.write(e);
     if (st != null) buffer.write(st);
-    buffer.write(stackTrace);
     return buffer.toString();
   }
 }

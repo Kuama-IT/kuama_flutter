@@ -2,29 +2,29 @@ import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/kuama_flutter.dart';
 import 'package:kuama_flutter/permissions.dart';
 import 'package:kuama_flutter/positioner.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:pure_extensions/pure_extensions.dart';
 import 'package:test/test.dart';
 
-import 'positioner_bloc_test.mocks.dart';
+class _MockCheckPositionService extends Mock implements CheckPositionService {}
+
+class _MockOnPositionServiceChanges extends Mock implements OnPositionServiceChanges {}
+
+class _MockGetCurrentPosition extends Mock implements GetCurrentPosition {}
+
+class _MockOnPositionChanges extends Mock implements OnPositionChanges {}
+
+class _MockPositionPermissionBloc extends Mock implements PositionPermissionBloc {}
 
 enum EmissionType { none, acquire, alreadyHas }
 
-@GenerateMocks([
-  CheckPositionService,
-  OnPositionServiceChanges,
-  GetCurrentPosition,
-  OnPositionChanges,
-  PositionPermissionBloc,
-])
 void main() {
-  late MockCheckPositionService mockCheckService;
-  late MockOnPositionServiceChanges mockOnServiceChanges;
-  late MockGetCurrentPosition mockGetCurrent;
-  late MockOnPositionChanges mockOnPositionChanges;
+  late _MockCheckPositionService mockCheckService;
+  late _MockOnPositionServiceChanges mockOnServiceChanges;
+  late _MockGetCurrentPosition mockGetCurrent;
+  late _MockOnPositionChanges mockOnPositionChanges;
 
-  late MockPositionPermissionBloc mockPermissionBloc;
+  late _MockPositionPermissionBloc mockPermissionBloc;
 
   late PositionBloc bloc;
 
@@ -33,34 +33,34 @@ void main() {
   setUp(() {
     GetIt.instance
       ..reset()
-      ..registerSingleton<CheckPositionService>(mockCheckService = MockCheckPositionService())
+      ..registerSingleton<CheckPositionService>(mockCheckService = _MockCheckPositionService())
       ..registerSingleton<OnPositionServiceChanges>(
-          mockOnServiceChanges = MockOnPositionServiceChanges())
-      ..registerSingleton<GetCurrentPosition>(mockGetCurrent = MockGetCurrentPosition())
-      ..registerSingleton<OnPositionChanges>(mockOnPositionChanges = MockOnPositionChanges());
+          mockOnServiceChanges = _MockOnPositionServiceChanges())
+      ..registerSingleton<GetCurrentPosition>(mockGetCurrent = _MockGetCurrentPosition())
+      ..registerSingleton<OnPositionChanges>(mockOnPositionChanges = _MockOnPositionChanges());
   });
 
   void init({
     EmissionType permission = EmissionType.none,
     EmissionType service = EmissionType.none,
   }) {
-    mockPermissionBloc = MockPositionPermissionBloc();
+    mockPermissionBloc = _MockPositionPermissionBloc();
 
-    when(mockPermissionBloc.state).thenReturn(permission == EmissionType.alreadyHas
+    when(() => mockPermissionBloc.state).thenReturn(permission == EmissionType.alreadyHas
         ? const PermissionBlocRequested(permission: tPermission, status: PermissionStatus.granted)
         : const PermissionBlocRequested(permission: tPermission, status: PermissionStatus.denied));
-    when(mockPermissionBloc.stream).thenAnswer((_) async* {
+    when(() => mockPermissionBloc.stream).thenAnswer((_) async* {
       if (permission == EmissionType.acquire) {
         yield const PermissionBlocRequested(
             permission: tPermission, status: PermissionStatus.granted);
       }
     });
-    when(mockCheckService.call(NoParams())).thenAnswer((realInvocation) async {
-      return Right(service == EmissionType.alreadyHas);
+    when(() => mockCheckService.call(NoParams())).thenAnswer((realInvocation) async {
+      return service == EmissionType.alreadyHas;
     });
-    when(mockOnServiceChanges.call(NoParams())).thenAnswer((_) async* {
+    when(() => mockOnServiceChanges.call(NoParams())).thenAnswer((_) async* {
       if (service == EmissionType.acquire) {
-        yield const Right(true);
+        yield true;
       }
     });
 
@@ -143,8 +143,8 @@ void main() {
         ]),
       );
 
-      when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
-        return const Right(GeoPoint(0.0, 0.0));
+      when(() => mockGetCurrent.call(NoParams())).thenAnswer((_) async {
+        return const GeoPoint(0.0, 0.0);
       });
 
       bloc.locate();
@@ -194,12 +194,12 @@ void main() {
         ]),
       );
 
-      when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
-        return const Right(GeoPoint(0.0, 0.0));
+      when(() => mockGetCurrent.call(NoParams())).thenAnswer((_) async {
+        return const GeoPoint(0.0, 0.0);
       });
-      when(mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {
+      when(() => mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {
         await Future.delayed(const Duration());
-        yield const Right(GeoPoint(1.0, 1.0));
+        yield const GeoPoint(1.0, 1.0);
       });
 
       // ======== Test user tracking ========
@@ -292,11 +292,11 @@ void main() {
         isServiceEnabled: true,
       ));
 
-      when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
-        return const Right(GeoPoint(0.0, 0.0));
+      when(() => mockGetCurrent.call(NoParams())).thenAnswer((_) async {
+        return const GeoPoint(0.0, 0.0);
       });
-      when(mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {
-        yield const Right(GeoPoint(0.0, 0.0));
+      when(() => mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {
+        yield const GeoPoint(0.0, 0.0);
       });
 
       bloc.track();
@@ -317,7 +317,7 @@ void main() {
         ]),
       );
 
-      verify(mockOnPositionChanges.call(NoParams())).called(1);
+      verify(() => mockOnPositionChanges.call(NoParams())).called(1);
 
       bloc.unTrack();
       await Future.delayed(const Duration(milliseconds: 10));
@@ -345,10 +345,10 @@ void main() {
     });
 
     test('Emit real time position after bloc is initialized but track request before it', () async {
-      when(mockGetCurrent.call(NoParams())).thenAnswer((_) async {
-        return const Right(GeoPoint(0.0, 0.0));
+      when(() => mockGetCurrent.call(NoParams())).thenAnswer((_) async {
+        return const GeoPoint(0.0, 0.0);
       });
-      when(mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {});
+      when(() => mockOnPositionChanges.call(NoParams())).thenAnswer((_) async* {});
 
       init(permission: EmissionType.acquire, service: EmissionType.acquire);
 

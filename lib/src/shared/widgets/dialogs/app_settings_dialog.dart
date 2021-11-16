@@ -20,12 +20,8 @@ class AskOpenSettingsPageDialog extends StatelessWidget {
   }) : super(key: key);
 
   void openSettingsPage() async {
-    final res = await (openSettings ?? GetIt.I<OpenSettingsAppPage>()).call(NoParams());
-    res.fold((failure) {
-      lg.e('The settings page could not be opened', failure);
-    }, (wasOpened) {
-      if (!wasOpened) lg.e('The settings page could not be opened');
-    });
+    final wasOpened = await (openSettings ?? GetIt.I<OpenSettingsAppPage>()).call(NoParams());
+    if (!wasOpened) lg.e('The settings page could not be opened');
   }
 
   @override

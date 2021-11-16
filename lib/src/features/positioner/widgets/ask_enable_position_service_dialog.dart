@@ -61,12 +61,8 @@ class OrderEnablePositionServiceDialog extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final result = await GetIt.I<OpenPositionServicePage>().call(NoParams());
-                  result.fold((failure) {
-                    lg.e('Open Location Settings page failed!', failure);
-                  }, (isOpened) {
-                    if (!isOpened) lg.e('Open Location Settings page failed!');
-                  });
+                  final isOpened = await GetIt.I<OpenPositionServicePage>().call(NoParams());
+                  if (!isOpened) lg.e('Open Location Settings page failed!');
                 },
                 child: settingsLabel ?? const Text('Open Settings'),
               ),

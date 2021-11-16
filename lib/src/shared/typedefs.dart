@@ -6,3 +6,9 @@ typedef ButtonBlocWidgetBuilder<TState> = Widget Function(
     BuildContext context, TState state, VoidCallback? onTap);
 
 typedef ProgressBuilder = Widget Function(BuildContext context, double? progress);
+
+class Param<T> {
+  final T value;
+
+  const Param(this.value);
+}
