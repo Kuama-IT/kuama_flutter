@@ -125,10 +125,11 @@ abstract class ProgressUseCase<TParams, TResult>
 }
 
 extension StreamFailureExtension<T> on Stream<T> {
-  Stream<T> onFailureResume(Stream<T> Function(Failure failure) onFailure) {
+  Stream<T> onFailureResume(Stream<T>? Function(Failure failure) onFailure) {
     return onErrorResume((error, stackTrace) {
       if (error is Failure) {
-        return onFailure(error);
+        final stream = onFailure(error);
+        if (stream != null) return stream;
       }
       return Stream.error(error, stackTrace);
     });

@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart' as w;
 import 'package:flutter/material.dart' hide showGeneralDialog, showDialog;
 
 // ==================== DART  ====================
 
-extension BoolHandlers on bool {
+extension BoolKuamaExtensions on bool {
   R fold<R>(R Function() ifFalse, R Function() ifTrue) => this ? ifTrue() : ifFalse();
 
   /// Returns the value if it is true otherwise it returns null.
@@ -13,31 +12,7 @@ extension BoolHandlers on bool {
   R? ifFalse<R>(R result) => this ? result : null;
 }
 
-extension UnwaitedFuture on Future<dynamic> {
-  void unawaited() => this;
-}
-
 // ==================== FLUTTER  ====================
-
-extension BuildContextKuamaExtension on BuildContext {
-  Future<T?> showGeneralDialog<T>({
-    required WidgetBuilder builder,
-  }) {
-    return w.showGeneralDialog(
-      context: this,
-      pageBuilder: (context, _, __) => builder(context),
-    );
-  }
-
-  Future<T?> showDialog<T>({
-    required WidgetBuilder builder,
-  }) {
-    return w.showDialog(
-      context: this,
-      builder: builder,
-    );
-  }
-}
 
 extension CrossFadeStateOnBool on bool {
   CrossFadeState toCrossFadeState() {
