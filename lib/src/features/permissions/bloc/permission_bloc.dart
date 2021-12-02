@@ -61,6 +61,10 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
     @visibleForTesting bool canLoad = true,
   })  : _isConfirmRequired = isConfirmRequired,
         super(PermissionBlocRequesting(permission: permission)) {
+    on<PermissionEvent>(
+      (event, emit) => emit.forEach<PermissionBlocState>(mapEventToState(event), onData: (s) => s),
+      transformer: (events, mapper) => events.asyncExpand((event) => mapper(event)),
+    );
     if (!isTesting) load();
   }
 
@@ -75,7 +79,6 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
   /// Confirm the permit request
   void confirmRequest(bool canRequest) => add(ConfirmRequestPermissionBloc(canRequest));
 
-  @override
   @protected
   Stream<PermissionBlocState> mapEventToState(PermissionEvent event) async* {
     final state = this.state;
