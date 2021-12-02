@@ -38,6 +38,10 @@ class PositionBloc extends Bloc<PositionBlocEvent, PositionBlocState> {
           hasPermission: permissionBloc.state.isGranted,
           isServiceEnabled: false,
         )) {
+    on<PositionBlocEvent>(
+      (event, emit) => emit.forEach<PositionBlocState>(mapEventToState(event), onData: (s) => s),
+      transformer: (events, mapper) => events.asyncExpand((event) => mapper(event)),
+    );
     permissionBloc.stream.listen((permissionState) {
       add(_PermissionUpdatePositionBloc(permissionState));
     }).addTo(_permissionSubs);
@@ -58,7 +62,6 @@ class PositionBloc extends Bloc<PositionBlocEvent, PositionBlocState> {
   /// There is no need to call it if you weren't listening to the realtime position.
   void unTrack() => add(const UnTrackPositionBloc());
 
-  @override
   Stream<PositionBlocState> mapEventToState(PositionBlocEvent event) {
     if (event is _PermissionUpdatePositionBloc) {
       return _mapPermissionUpdate(event.state);
