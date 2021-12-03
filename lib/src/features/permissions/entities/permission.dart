@@ -5,7 +5,10 @@ enum Permission {
 
   /// In Android returns always true
   notification,
+
   camera,
+
+  storage,
 }
 
 extension PermissionNameExtension on Permission {
