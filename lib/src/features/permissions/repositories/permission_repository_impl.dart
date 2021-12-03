@@ -77,6 +77,8 @@ extension _PermissionToPermissionHandler on Permission {
         return ph.Permission.notification;
       case Permission.camera:
         return ph.Permission.camera;
+      case Permission.storage:
+        return ph.Permission.storage;
     }
   }
 }
