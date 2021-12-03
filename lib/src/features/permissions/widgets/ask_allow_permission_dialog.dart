@@ -36,6 +36,8 @@ class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
         return const Text('Allow to receive notifications');
       case Permission.camera:
         return const Text('Allow to access your camera?');
+      case Permission.storage:
+        return const Text('Allow to access your storage?');
     }
   }
 
