@@ -28,15 +28,6 @@ extension BuildContextKuamaExtension on BuildContext {
       pageBuilder: (context, _, __) => builder(context),
     );
   }
-
-  Future<T?> showDialog<T>({
-    required WidgetBuilder builder,
-  }) {
-    return w.showDialog(
-      context: this,
-      builder: builder,
-    );
-  }
 }
 
 extension CrossFadeStateOnBool on bool {
