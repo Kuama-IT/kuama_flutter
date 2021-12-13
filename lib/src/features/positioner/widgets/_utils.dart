@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/src/_utils/lg.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/open_position_service_page.dart';
