@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kuama_flutter/src/features/permissions/bloc/permission_bloc.dart';
 import 'package:kuama_flutter/src/features/permissions/entities/permission.dart';
 import 'package:kuama_flutter/src/features/permissions/widgets/ask_allow_permission_dialog.dart';
-import 'package:provider/provider.dart';
 
 /// Show a button to request permission when it has been denied or permanently denied
 /// The button is not shown if the permission has been granted

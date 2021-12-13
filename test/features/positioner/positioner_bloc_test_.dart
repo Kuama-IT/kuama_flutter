@@ -1,4 +1,3 @@
-import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/kuama_flutter.dart';
 import 'package:kuama_flutter/permissions.dart';
 import 'package:kuama_flutter/positioner.dart';
