@@ -6,3 +6,5 @@ typedef ButtonBlocWidgetBuilder<TState> = Widget Function(
     BuildContext context, TState state, VoidCallback? onTap);
 
 typedef ProgressBuilder = Widget Function(BuildContext context, double? progress);
+
+typedef WidgetPicker<T> = Future<T> Function(BuildContext context);
