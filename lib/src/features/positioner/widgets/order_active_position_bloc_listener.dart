@@ -5,12 +5,20 @@ import 'package:kuama_flutter/src/features/permissions/bloc/permission_bloc.dart
 import 'package:kuama_flutter/src/features/permissions/widgets/ask_allow_permission_dialog.dart';
 import 'package:kuama_flutter/src/features/positioner/bloc/position_bloc.dart';
 import 'package:kuama_flutter/src/features/positioner/widgets/ask_enable_position_service_dialog.dart';
+import 'package:kuama_flutter/src/shared/typedefs.dart';
 import 'package:provider/single_child_widget.dart';
 
 /// It forces you to grant permission for the location and activate the geolocation service.
 /// If you cancel the procedure, you will return to the previous screen.
 class OrderActivePositionBlocListener extends SingleChildStatefulWidget {
-  const OrderActivePositionBlocListener({Key? key}) : super(key: key);
+  final WidgetPicker<bool?>? permissionPicker;
+  final WidgetPicker<bool?>? servicePicker;
+
+  const OrderActivePositionBlocListener({
+    Key? key,
+    this.permissionPicker,
+    this.servicePicker,
+  }) : super(key: key);
 
   @override
   _OrderPermissionAndServicePermissionBlocListenerState createState() =>
@@ -27,21 +35,30 @@ class _OrderPermissionAndServicePermissionBlocListenerState
     });
   }
 
-  Future<void> _handleDialog(
-      BuildContext context, PositionBlocState state, WidgetBuilder builder) async {
-    final result = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: builder,
-    );
-    if (result != true) Navigator.of(context).pop();
+  Future<void> _pickPermission(
+    BuildContext context,
+    WidgetPicker<bool?>? picker,
+    WidgetBuilder builder,
+  ) async {
+    bool? result;
+    if (picker != null) {
+      result = await picker(context);
+    } else {
+      result = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: builder,
+      );
+    }
+    // Close the current page if any
+    if (result != true) Navigator.of(context).maybePop();
   }
 
   void _handleState(BuildContext context, PositionBlocState state) async {
     if (!state.hasPermission) {
-      await _handleDialog(
+      await _pickPermission(
         context,
-        state,
+        widget.permissionPicker,
         (context) => OrderAllowPermissionDialog<PermissionBloc>(
           permissionBloc: context.read<PositionBloc>().permissionBloc,
         ),
@@ -49,9 +66,9 @@ class _OrderPermissionAndServicePermissionBlocListenerState
       return;
     }
     if (!state.isServiceEnabled) {
-      await _handleDialog(
+      await _pickPermission(
         context,
-        state,
+        widget.servicePicker,
         (context) => const OrderEnablePositionServiceDialog(),
       );
       return;
