@@ -9,7 +9,7 @@ extension BoolKuamaExtensions on bool {
   R? ifTrue<R>(R result) => this ? result : null;
 
   /// Returns the value if it is false otherwise it returns null.
-  R? ifFalse<R>(R result) => this ? result : null;
+  R? ifFalse<R>(R result) => this ? null : result;
 }
 
 // ==================== FLUTTER  ====================
