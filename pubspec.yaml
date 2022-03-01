@@ -16,7 +16,7 @@ dependencies:
   shared_preferences: ^2.0.0
 
   permission_handler_platform_interface: ^3.6.0
-  geolocator_platform_interface: ^2.3.2
+  geolocator_platform_interface: ^4.0.0
 
 # DOMAIN
 
