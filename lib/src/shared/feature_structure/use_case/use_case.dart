@@ -143,7 +143,7 @@ extension StreamSubscriptionExtension<T> on StreamSubscription<T> {
         final res = onFailure(error);
         if (res != false) return;
       }
-      Zone.current.handleUncaughtError(error, stackTrace);
+      Error.throwWithStackTrace(error, stackTrace);
     });
     return this;
   }
