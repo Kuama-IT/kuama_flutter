@@ -2,19 +2,24 @@ import 'package:dio/dio.dart';
 import 'package:kuama_flutter/src/shared/utils/debuggable.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// Keep the same basic structure of [Error]/[Exception]
 abstract class Failure with Debuggable {
   final ErrorAndStackTrace? error;
 
   Failure({this.error});
 
-  /// Explains the cause of the error and how to fix it
+  /// Explains the cause of the failure and how to fix it
   String get message => onMessage;
 
+  /// DEPRECATED: Implement [message]
+  ///
   /// Explain the causes of the failure and how to fix it,
   /// avoid using the error data for the explanation
   // Correct name: onCollectDebugMessage
-  String get onMessage;
+  String get onMessage => '';
 
+  /// DEPRECATED: Create your base Failure and mix it with [Debuggable]
+  ///
   /// This method is used to collect a debug information
   @override
   Map<String, dynamic> collectDebugInfo() {
@@ -28,9 +33,11 @@ abstract class Failure with Debuggable {
     };
   }
 
+  /// DEPRECATED: Create your base Failure and mix it with [Debuggable]
+  ///
   /// Collect as much failure data as possible, avoid using the failure data
   // Correct name: onCollectDebugInfo
-  Map<String, dynamic> toLogMessages() => {'Failure(${runtimeType})': onMessage};
+  Map<String, dynamic> toLogMessages() => {'Failure(${runtimeType})': message};
 
   /// This is string is used to show error on console
   @override
