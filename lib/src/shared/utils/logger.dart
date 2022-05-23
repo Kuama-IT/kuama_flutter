@@ -127,7 +127,7 @@ class Logger {
 
       _logSubject.add(Log(
         index: _index++,
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().toUtc(),
         name: name,
         level: level,
         message: message,
