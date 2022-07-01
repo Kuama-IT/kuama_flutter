@@ -116,10 +116,10 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
   /// NB: If it fails or succeeds with a wrong outcome, the bloc is not affected by the malfunction
   /// TODO: It continues with the correct functioning even in case of success with wrong response
   Future<void> _callUpdateCanAsk(bool canAsk) async {
-    final _canAsk =
+    final canAskResponse =
         await _updateCanAsk.call(UpdateCanAskPermissionParams(state.permission, canAsk));
     // Todo: Show failure
-    lg.i('Update can ask permission: $_canAsk');
+    lg.i('Update can ask permission: $canAskResponse');
   }
 
   /// Update the state of the bloc based on the status of the permission (canAsk, status)
@@ -169,9 +169,10 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionBlocState> {
 enum _RequestType { confirm, request, load }
 
 extension _RequestTypeExtension on _RequestType {
-  bool get isConfirm => this == _RequestType.confirm;
   bool get isRequest => this == _RequestType.request;
-  bool get isLoad => this == _RequestType.load;
+  // Not used
+  //bool get isConfirm => this == _RequestType.confirm;
+  //bool get isLoad => this == _RequestType.load;
 }
 
 class PositionPermissionBloc extends PermissionBloc {

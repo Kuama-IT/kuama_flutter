@@ -15,20 +15,13 @@ jobs:
     #sequence of tasks called
     steps:
       # The branch or tag ref that triggered the workflow will be checked out.
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
-        with:
-          java-version: '12.x'
-      - uses: actions/cache@v1
-        with:
-          path: ./.dart_tool
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - uses: actions/checkout@v3
       # Setup a flutter environment.
       # https://github.com/marketplace/actions/flutter-action
-      - uses: subosito/flutter-action@v1
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '2.10.x'
+          flutter-version: '3.0.x'
       - run: flutter pub get
       # generate dart mocks files
       - run: flutter packages pub run build_runner build --build-filter="test/**"

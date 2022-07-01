@@ -1,4 +1,3 @@
-import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/kuama_flutter.dart';
 import 'package:kuama_flutter/src/features/positioner/repositories/position_repository.dart';
 import 'package:pure_extensions/pure_extensions.dart';

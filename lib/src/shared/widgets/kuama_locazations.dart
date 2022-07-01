@@ -17,7 +17,7 @@ class _KuamaLocalizationsDelegate extends LocalizationsDelegate<KuamaLocalizatio
 }
 
 class KuamaLocalizations {
-  static const _KuamaLocalizationsDelegate delegate = _KuamaLocalizationsDelegate();
+  static const LocalizationsDelegate<KuamaLocalizations> delegate = _KuamaLocalizationsDelegate();
 
   const KuamaLocalizations();
 

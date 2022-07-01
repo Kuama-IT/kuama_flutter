@@ -20,7 +20,8 @@ class RequestPermissionBlocListener<TPermissionBloc extends PermissionBloc>
   }) : super(key: key, child: child);
 
   @override
-  _PermissionBlocBuilderState<TPermissionBloc> createState() => _PermissionBlocBuilderState();
+  SingleChildState<RequestPermissionBlocListener<TPermissionBloc>> createState() =>
+      _PermissionBlocBuilderState();
 }
 
 class _PermissionBlocBuilderState<TPermissionBloc extends PermissionBloc>

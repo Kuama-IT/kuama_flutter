@@ -58,7 +58,7 @@ class DeferredBuilder<T> extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DeferredBuilderState<T> createState() => _DeferredBuilderState();
+  State<DeferredBuilder<T>> createState() => _DeferredBuilderState();
 }
 
 class _DeferredBuilderState<T> extends State<DeferredBuilder<T>> {
@@ -97,7 +97,7 @@ class DeferredListener<T> extends SingleChildStatefulWidget {
   }) : super(key: key, child: child);
 
   @override
-  _DeferredListenerState<T> createState() => _DeferredListenerState();
+  SingleChildState<DeferredListener<T>> createState() => _DeferredListenerState();
 }
 
 class _DeferredListenerState<T> extends SingleChildState<DeferredListener<T>> {

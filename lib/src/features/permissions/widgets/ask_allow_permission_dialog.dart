@@ -105,6 +105,7 @@ class OrderAllowPermissionDialog<TPermissionBloc extends PermissionBloc> extends
     if (state.canForceRequest) {
       return () => permissionBloc.request(isConfirmRequired: false, canForce: true);
     }
+    return null;
   }
 
   @override
