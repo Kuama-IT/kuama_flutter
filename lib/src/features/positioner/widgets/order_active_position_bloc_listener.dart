@@ -12,7 +12,7 @@ class OrderActivePositionBlocListener extends SingleChildStatefulWidget {
   const OrderActivePositionBlocListener({Key? key}) : super(key: key);
 
   @override
-  _OrderPermissionAndServicePermissionBlocListenerState createState() =>
+  SingleChildState<OrderActivePositionBlocListener> createState() =>
       _OrderPermissionAndServicePermissionBlocListenerState();
 }
 
@@ -21,7 +21,7 @@ class _OrderPermissionAndServicePermissionBlocListenerState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _handleState(context, context.read<PositionBloc>().state);
     });
   }
@@ -33,7 +33,10 @@ class _OrderPermissionAndServicePermissionBlocListenerState
       barrierDismissible: false,
       builder: builder,
     );
-    if (result != true) Navigator.of(context).pop();
+    if (result != true) {
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    }
   }
 
   void _handleState(BuildContext context, PositionBlocState state) async {

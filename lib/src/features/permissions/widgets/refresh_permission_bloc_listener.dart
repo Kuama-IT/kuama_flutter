@@ -15,18 +15,19 @@ class RefreshPermissionBlocListener<TPermissionBloc extends PermissionBloc>
   }) : super(key: key, child: child);
 
   @override
-  _RefreshPermissionBlocListenerState<TPermissionBloc> createState() =>
+  SingleChildState<RefreshPermissionBlocListener<TPermissionBloc>> createState() =>
       _RefreshPermissionBlocListenerState();
 }
 
 class _RefreshPermissionBlocListenerState<TPermissionBloc extends PermissionBloc>
-    extends SingleChildState<RefreshPermissionBlocListener> with WidgetsBindingObserver {
+    extends SingleChildState<RefreshPermissionBlocListener<TPermissionBloc>>
+    with WidgetsBindingObserver {
   bool _isForeground = true;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -45,7 +46,7 @@ class _RefreshPermissionBlocListenerState<TPermissionBloc extends PermissionBloc
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

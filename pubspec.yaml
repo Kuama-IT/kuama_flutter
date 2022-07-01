@@ -4,8 +4,8 @@ version: 0.1.0
 publish_to: 'none'
 
 environment:
-  sdk: '>=2.16.0 <3.0.0'
-  flutter: ">=2.10.0 <3.0.0"
+  sdk: '>=2.17.0 <3.0.0'
+  flutter: '>=3.0.0'
 
 dependencies:
   flutter:
@@ -13,49 +13,49 @@ dependencies:
 
 # DATA
 
-  dio: ^4.0.4
-  shared_preferences: ^2.0.13
+  dio: ^4.0.6
+  shared_preferences: ^2.0.15
 
   permission_handler_platform_interface: ^3.7.0
-  geolocator_platform_interface: ^4.0.3
+  geolocator_platform_interface: ^4.0.5
 
 # DOMAIN
 
 ## Data extensions
   meta:
-  pure_extensions: ^4.1.1
-  rxdart: ^0.27.3
+  pure_extensions: ^4.2.0
+  rxdart: ^0.27.4
 
 ## Primitive data
   tuple: ^2.0.0
-  built_value: ^8.1.4
+  built_value: ^8.3.3
   built_collection: ^5.1.1
   equatable: ^2.0.3
 
 ## Functionality
-  convert: ^3.0.1
+  convert: ^3.0.2
   get_it: ^7.2.0
-  synchronized: ^3.0.0
+  synchronized: ^3.0.0+2
 
 # PRESENTATION
 
-  provider: ^6.0.2
+  provider: ^6.0.3
   bloc: ^8.0.3
   flutter_bloc: ^8.0.1
 
 dev_dependencies:
-  flutter_lints: ^1.0.4
+  flutter_lints: ^2.0.1
 
   flutter_test:
     sdk: flutter
-  test: ^1.19.5
-  mocktail: ^0.2.0
+  test: ^1.21.1
+  mocktail: ^0.3.0
 
   # To generate .g files:
   # flutter pub run build_runner build --delete-conflicting-outputs
   # flutter pub run build_runner watch --delete-conflicting-outputs
   # The version depends on the packages that use it
-  build_runner: ^2.1.7
+  build_runner: ^2.1.11
 
 flutter:
 

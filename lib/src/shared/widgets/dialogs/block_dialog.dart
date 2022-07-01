@@ -11,7 +11,7 @@ class BlockDialog extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _BlockDialogState createState() => _BlockDialogState();
+  State<BlockDialog> createState() => _BlockDialogState();
 }
 
 class _BlockDialogState extends State<BlockDialog> {

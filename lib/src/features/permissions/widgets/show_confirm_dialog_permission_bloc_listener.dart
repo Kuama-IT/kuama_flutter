@@ -47,7 +47,7 @@ class AskAllowPermissionBlocListener<TPermissionBloc extends PermissionBloc>
       onAcquired: (context, permissionBloc) {
         final state = permissionBloc.state;
         if (state is! PermissionBlocRequestConfirm) return;
-        WidgetsBinding.instance!.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           onState(context, permissionBloc, state);
         });
       },

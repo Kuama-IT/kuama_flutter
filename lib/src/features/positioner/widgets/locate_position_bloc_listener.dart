@@ -28,7 +28,8 @@ class LocatePositionBlocListener extends SingleChildStatefulWidget {
   }) : super(key: key, child: child);
 
   @override
-  _LocalizePositionBlocListenerState createState() => _LocalizePositionBlocListenerState();
+  SingleChildState<LocatePositionBlocListener> createState() =>
+      _LocalizePositionBlocListenerState();
 }
 
 class _LocalizePositionBlocListenerState extends SingleChildState<LocatePositionBlocListener> {

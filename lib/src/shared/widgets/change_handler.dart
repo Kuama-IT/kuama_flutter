@@ -25,7 +25,7 @@ class ValueChangeHandler<T> extends SingleChildStatefulWidget {
   }) : super(key: key, child: child);
 
   @override
-  _HandlerState<T> createState() => _HandlerState();
+  SingleChildState<ValueChangeHandler<T>> createState() => _HandlerState();
 }
 
 class _HandlerState<T> extends SingleChildState<ValueChangeHandler<T>> {
@@ -78,7 +78,7 @@ class _HandlerState<T> extends SingleChildState<ValueChangeHandler<T>> {
     if (widget.canCallImmediately) {
       function();
     } else {
-      WidgetsBinding.instance!.addPostFrameCallback((_) => function());
+      WidgetsBinding.instance.addPostFrameCallback((_) => function());
     }
   }
 

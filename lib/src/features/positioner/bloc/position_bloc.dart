@@ -1,18 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:get_it/get_it.dart';
 import 'package:kuama_flutter/kuama_flutter.dart';
 import 'package:kuama_flutter/src/features/permissions/bloc/permission_bloc.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/check_position_service.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/get_current_position.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/on_position_changes.dart';
 import 'package:kuama_flutter/src/features/positioner/usecases/on_service_changes.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/failures/dart_failures.dart';
-import 'package:kuama_flutter/src/shared/feature_structure/use_case/params.dart';
 import 'package:pure_extensions/pure_extensions.dart';
-import 'package:rxdart/rxdart.dart';
 
 part '_positioner_event.dart';
 part '_positioner_state.dart';
