@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.0
+> 2022-10-18
+- feat: customize a OrderActivePositionBlocListener with custom pickers
+
 ## 0.1.0
 - The package no longer exposes `dartz` but retains tuple support with the `tuple` package, it depends on indirect `quiver` package
 - `UseCase` are now simple functions that take a parameter as input and return a result. Catch `Failure` exceptions to handle use case fillings. Do not capture
