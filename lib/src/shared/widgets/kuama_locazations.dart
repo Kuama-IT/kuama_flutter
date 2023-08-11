@@ -32,7 +32,7 @@ class KuamaLocalizations {
   }
 
   String onTranslateHttpClientFailure(HttpClientFailure failure) {
-    return 'Server error (${failure.dioError.response?.statusCode ?? '---'})';
+    return 'Server error (${failure.dioException.response?.statusCode ?? '---'})';
   }
 
   String onTranslatePlatformFailure(PlatformFailure failure) {
