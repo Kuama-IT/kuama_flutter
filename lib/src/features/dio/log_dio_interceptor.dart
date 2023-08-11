@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:kuama_flutter/src/shared/utils/debuggable.dart';
 import 'package:kuama_flutter/src/shared/utils/logger.dart';
 
-class LogDioInterceptor with Interceptor {
+class LogDioInterceptor implements Interceptor {
   final Logger logger;
 
   final bool canLogRequest;
@@ -51,12 +51,12 @@ class LogDioInterceptor with Interceptor {
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) {
     if (canLogError) {
       _logError({
-        'DioError(${err.type}|${_mergeMethodUri(err.requestOptions)})': err.message,
+        'DioException(${err.type}|${_mergeMethodUri(err.requestOptions)})': err.message,
         if (err.response != null) ..._mapResponse(err.response!),
-        if (err is Error) 'DioErrorStackTrace': (err as Error).stackTrace,
+        if (err is Error) 'DioExceptionStackTrace': (err as Error).stackTrace,
       });
     }
     if (!handler.isCompleted) handler.next(err);

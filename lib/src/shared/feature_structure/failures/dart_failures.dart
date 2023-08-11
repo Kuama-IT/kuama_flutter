@@ -62,18 +62,18 @@ class UnhandledFailure<TParams> extends Failure {
 
 /// Extend or use this class for all errors/exceptions given by classes that use an HttpClient
 class HttpClientFailure extends Failure {
-  final DioError dioError;
+  final DioException dioException;
 
   HttpClientFailure({
-    required DioError error,
+    required DioException error,
     required StackTrace stackTrace,
-  })  : dioError = error,
+  })  : dioException = error,
         super(error: ErrorAndStackTrace(error, stackTrace));
 
   @override
   String get onMessage {
-    final request = dioError.requestOptions;
-    final response = dioError.response;
+    final request = dioException.requestOptions;
+    final response = dioException.response;
 
     var msg = 'An unhandled error of the Dio http client.';
     msg += '\nThe errore was caused by ${request.method}:${request.uri}';
@@ -85,8 +85,8 @@ class HttpClientFailure extends Failure {
 
   @override
   Map<String, dynamic> toLogMessages() {
-    final request = dioError.requestOptions;
-    final response = dioError.response;
+    final request = dioException.requestOptions;
+    final response = dioException.response;
     return {
       '$runtimeType(${error.runtimeType}) ${request.uri}': request.data,
       if (response != null)

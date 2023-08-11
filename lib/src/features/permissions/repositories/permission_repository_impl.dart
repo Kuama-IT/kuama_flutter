@@ -93,6 +93,7 @@ extension _PermissionStatusHandlerToPermissionStatus on ph.PermissionStatus {
       case ph.PermissionStatus.restricted:
         return PermissionStatus.denied;
       case ph.PermissionStatus.granted:
+      case ph.PermissionStatus.provisional: // iOS12+ only
         return PermissionStatus.granted;
     }
   }

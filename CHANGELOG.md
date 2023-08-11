@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.1
+> 2023-08-11
+- feat: update Dio version
+
 ## 0.2.0
 > 2022-10-18
 - feat: customize a OrderActivePositionBlocListener with custom pickers
