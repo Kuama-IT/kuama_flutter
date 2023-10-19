@@ -62,11 +62,11 @@ class ConfirmAllowPermissionsDialog<TPermissionBloc extends PermissionBloc>
             actions: [
               TextButton(
                 onPressed: state.canRequest ? () => permissionBloc.confirmRequest(false) : null,
-                child: notAllowLabel ?? const Text('Not allow'),
+                child: notAllowLabel ?? const Text('Cancel'),
               ),
               ElevatedButton(
                 onPressed: state.canRequest ? () => permissionBloc.confirmRequest(true) : null,
-                child: allowLabel ?? const Text('Allow'),
+                child: allowLabel ?? const Text('Continue'),
               ),
             ],
           ),
@@ -130,7 +130,7 @@ class OrderAllowPermissionDialog<TPermissionBloc extends PermissionBloc> extends
                 onPressed: _delegateMainButtonPress(context, permissionBloc, state),
                 child: state.isPermanentlyDenied
                     ? settingsLabel ?? const Text('Settings')
-                    : allowLabel ?? const Text('Allow'),
+                    : allowLabel ?? const Text('Continue'),
               ),
             ],
           );

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.2
+> 2023-10-19
+- fix: `Continue` and `Cancel` button's strings in permission dialog 
+
 ## 0.2.1
 > 2023-08-11
 - feat: update Dio version
